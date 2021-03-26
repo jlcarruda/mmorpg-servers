@@ -15,9 +15,9 @@ const config = {
       host: process.env.GAMEWORLD_SERVER_HOST,
       port: process.env.GAMEWORLD_SERVER_PORT,
     },
-    authentication: {
-      host: process.env.AUTH_SERVER_HOST,
-      port: process.env.AUTH_SERVER_PORT,  
+    rest: {
+      host: process.env.REST_SERVER_HOST,
+      port: process.env.REST_SERVER_PORT,  
     }
   },
   database: {

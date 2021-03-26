@@ -50,7 +50,7 @@ schema.statics.register = async function(username, password) {
   }
 }
 
-schema.statics.authenticate = function(username, password) {
+schema.statics.authenticate = async function(username, password) {
   try {
     const user = await this.findOne({ username }).lean()
     if (!user) {

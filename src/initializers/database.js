@@ -1,16 +1,16 @@
 const mongoose = require('mongoose')
 
 const initialize = async ({ uri }) => {
-  console.info("Initializing DB connection ...")
+  console.info("[DATABASE] Initializing DB connection ...")
   try {
     const authConn = await mongoose.createConnection(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-    console.info("DB Connected!")
+    console.info("[DATABASE] DB Connected!")
     return authConn
   } catch (error) {
-    console.error("Error while trying to connect to database.", error)
+    console.error("[DATABASE] Error while trying to connect to database.", error)
     throw error;
   }
 }
