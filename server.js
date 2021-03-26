@@ -1,14 +1,10 @@
 const config = require('./config')
-const startSocketServer = require('./src/network/socket')
+const { startGameworld } = require('./src/gameworld')
 
 async function startInitializers() {
   console.log('Running server initializers ...')
-  const { server: { socket, host, port } } = config
-  const server = await startSocketServer(socket.corsOrigin)
-  
-  server.listen(port, () => {
-    console.log(`Server initialized on port ${port}.`)
-  })
+  const { services: { authentication, gameworld } } = config
+  await startGameworld(gameworld)
 }
 
 startInitializers()

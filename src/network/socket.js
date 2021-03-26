@@ -2,7 +2,7 @@ const Client = require('../client')
 const net = require('net')
 
 let server;
-const startSocketServer = (corsOrigin) => new Promise((resolve, reject) => {
+const startSocketServer = () => new Promise((resolve, reject) => {
 
   if (!server) {
     console.log('Creating socket server ...')
