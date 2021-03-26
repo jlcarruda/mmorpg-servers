@@ -1,0 +1,25 @@
+{
+  "name": "Starting Town",
+  "room": "rm_starting_town",
+  "teleports": [
+    {
+      "id": "tp_sewer_entrance",
+      "x": 400,
+      "y": 320,
+      "toRoom": "rm_starting_town_sewer",
+      "toEntrypoint": "ep_sewer_inside_entrance"
+    }
+  ],
+  "entryPoints": [
+    {
+      "id": "ep_start_point",
+      "x": 320,
+      "y": 320
+    },
+    {
+      "id": "ep_sewer_entrance",
+      "x": 400,
+      "y": 315
+    }
+  ]
+}
