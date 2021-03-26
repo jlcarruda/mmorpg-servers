@@ -1,4 +1,4 @@
-const authentication = require('./authentication')
+const authentication = require('./signin')
 const healthCheck = require('./health-check')
 
 module.exports = (app) => {

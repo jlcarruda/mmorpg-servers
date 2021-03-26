@@ -1,18 +1,19 @@
 const mongoose = require('mongoose')
 
-const initialize = async ({ uri }) => {
+const initialize = ({ uri }) => {
   console.info("[DATABASE] Initializing DB connection ...")
-  try {
-    const authConn = await mongoose.createConnection(uri, {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+    }).then(() => {
+      console.info("[DATABASE] DB Connected!")
+      resolve()
+    }).catch(error => {
+      console.error("[DATABASE] Error while trying to connect to database.", error)
+      reject(error)
     })
-    console.info("[DATABASE] DB Connected!")
-    return authConn
-  } catch (error) {
-    console.error("[DATABASE] Error while trying to connect to database.", error)
-    throw error;
-  }
+  })
 }
 
 module.exports = {
