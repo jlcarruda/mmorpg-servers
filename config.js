@@ -10,17 +10,18 @@ const config = {
     starting_zone: "rm_start",
     maps
   },
-  server: {
-    host: process.env.SERVER_HOST,
-    port: process.env.SERVER_PORT,
-    env,
-    socket: {
-      corsOrigin: process.env.CORS_ORIGIN
+  services: {
+    gameworld: {
+      host: process.env.GAMEWORLD_SERVER_HOST,
+      port: process.env.GAMEWORLD_SERVER_PORT,
     },
-    version: package.version,
+    rest: {
+      host: process.env.REST_SERVER_HOST,
+      port: process.env.REST_SERVER_PORT,  
+    }
   },
   database: {
-    uri: process.env.DATABASE_URI,
+    uri: process.env.DATABASE_URI
   }
 }
 

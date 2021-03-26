@@ -2,12 +2,12 @@ const Client = require('../client')
 const net = require('net')
 
 let server;
-const startSocketServer = (corsOrigin) => new Promise((resolve, reject) => {
+const startSocketServer = () => new Promise((resolve) => {
 
   if (!server) {
-    console.log('Creating socket server ...')
+    console.log('[GAMEWORLD] Creating socket server ...')
     server = net.createServer((socket) => {
-      console.log('Socket connected')
+      console.log('[GAMEWORLD] Socket connected')
 
       const client = new Client(socket)
       client.initialize()
