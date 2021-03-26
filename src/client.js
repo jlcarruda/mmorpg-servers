@@ -10,7 +10,7 @@ class Client {
   initialize() {
     const client = this;
 
-    client.socket.write(packet.build(["HELLO", now().toString()]))
+    client.socket.write(packet.build(["HANDSHAKE", now().toString()]))
 
     console.log('client initiated')
   }

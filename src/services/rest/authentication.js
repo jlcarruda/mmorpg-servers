@@ -1,7 +1,6 @@
 const { User } = require('../../models')
 
 module.exports = (app) => {
-  
   app.post('/auth', async (req, res, next) => {
     try {
       const { username, password } = req.body
@@ -28,4 +27,6 @@ module.exports = (app) => {
       next(error)
     }
   })
+
+  console.info('[REST] Authentication routes set!')
 }
