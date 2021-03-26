@@ -21,7 +21,7 @@ const config = {
     }
   },
   database: {
-    uri: process.env.DATABASE_URI,
+    uri: process.env.DATABASE_URI
   }
 }
 
