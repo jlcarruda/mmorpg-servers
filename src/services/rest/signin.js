@@ -12,7 +12,6 @@ module.exports = (app) => {
 
     try {
       const { username, password: bodyPassword } = req.body
-      console.log(`[AUTH] - body: ${username}  ${bodyPassword}`)
       const user = await User.authenticate(username, bodyPassword)
       if (!user) {
         return res.status(401).json(wrongCreds)
@@ -20,7 +19,6 @@ module.exports = (app) => {
         const { password, ...responseUser } = user
         
         const token = sign({ username: user.username, id: user._id })
-        console.log(`[TOKEN] ${token}`)
         return res.status(200).json({
           data: {
             ...responseUser
