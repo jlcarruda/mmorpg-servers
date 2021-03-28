@@ -13,8 +13,8 @@
   "entryPoints": [
     {
       "id": "ep_start_point",
-      "x": 10,
-      "y": 10
+      "x": 300,
+      "y": 100
     },
     {
       "id": "ep_sewer_entrance",
