@@ -1,5 +1,5 @@
 const { User } = require('../../models')
-const { checkUserPassword } = require('../utils/authenticate')
+const { sign } = require('../utils/encrypt')
 
 module.exports = (app) => {
   app.post('/auth', async (req, res, next) => {
@@ -18,11 +18,14 @@ module.exports = (app) => {
         return res.status(401).json(wrongCreds)
       } else {
         const { password, ...responseUser } = user
-        console.log(responseUser)
+        
+        const token = sign({ username: user.username, id: user._id })
+        console.log(`[TOKEN] ${token}`)
         return res.status(200).json({
           data: {
             ...responseUser
-          }
+          },
+          token,
         })
       }
     } catch (error) {

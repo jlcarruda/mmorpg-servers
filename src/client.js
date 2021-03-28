@@ -8,15 +8,16 @@ class Client {
   }
 
   initialize() {
-    const client = this;
+    this.self = this;
 
-    client.socket.write(packet.build(["HANDSHAKE", now().toString()]))
+    this.self.socket.write(packet.build(["REQUEST_HANDSHAKE"]))
 
     console.log('client initiated')
   }
 
-  onData(data) {
-    console.log("Client data received", data.toString())
+  onData() {
+    const client = this;
+    return (data) => { packet.parse(client, data) }
   }
 
   onError(err) {

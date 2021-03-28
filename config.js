@@ -10,6 +10,12 @@ const config = {
     starting_zone: "rm_start",
     maps
   },
+  encryption: {
+    jwt: {
+      secret: process.env.JWT_SECRET,
+      // expiresIn: process.env.JWT_EXPIRATION
+    }
+  },
   services: {
     gameworld: {
       host: process.env.GAMEWORLD_SERVER_HOST,

@@ -1,9 +1,27 @@
+const Parser = require('./packet_parser')
+const interpreters = require('../services/interpreters')
+const { verify } = require('../services/utils/encrypt')
+/**
+ *  Socket packets on GMS is handled in this way: 
+ *   - A long buffer with all packets glued
+ *   
+ *   The first byte of the packet is its size, so we know how many bytes to read
+ */
+
 const zeroBuffer = Buffer.from('00', 'hex')
 
-module.exports = {
+const interpret = (client, packet_parser, datapacket) => {
+  let header = Parser.header.parse(datapacket)
+
+  console.log(`[PACKET] Interpret: ${header.command}`)
+
+  interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+}
+
+module.exports = packet = {
   build: (params) => {
-    packetParts = []
-    packetSize = 0
+    let packetParts = []
+    let packetSize = 0
 
     params.forEach( param => {
       let buffer;
@@ -31,5 +49,19 @@ module.exports = {
     size.writeUInt8(dataBuffer.length + 1, 0)
 
     return Buffer.concat([size, dataBuffer], size.length + dataBuffer.length)
-  }
+  },
+
+  // Parse packet to be handled by client
+  parse: (client, data) => {
+    let index = 0;
+
+    while(index < data.length) {
+      const packetSize = data.readUInt8(index)
+      const extracted = Buffer.alloc(packetSize)
+      data.copy(extracted, 0, index, index + packetSize)
+      interpret(client, packet, extracted)
+      index += packetSize
+    }
+  },
+  interpret,
 }

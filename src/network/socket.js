@@ -16,7 +16,7 @@ const startSocketServer = () => new Promise((resolve) => {
   
       socket.on("end", client.onEnd)
   
-      socket.on("data", client.onData)
+      socket.on("data", client.onData())
     })
   }
 
