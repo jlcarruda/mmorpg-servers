@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node ./server.js"
+    "debug": "nodemon --inspect ./server.js",
+    "local": "nodemon ./server.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,5 +24,8 @@
     "mongoose": "^5.12.2",
     "performance-now": "^2.1.0",
     "socket.io": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }

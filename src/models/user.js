@@ -50,6 +50,15 @@ schema.statics.register = async function(username, password) {
   }
 }
 
+schema.statics.checkUsernameAvailability = async function(username) {
+  try {
+    const response = await this.exists({ username })
+    return response;
+  } catch(err) {
+    console.error("Error while checking username availability", err)
+  }
+}
+
 schema.statics.authenticate = async function(username, password) {
   try {
     const user = await this.findOne({ username }).lean()
