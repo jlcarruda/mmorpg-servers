@@ -1,7 +1,17 @@
-const bcrypt = require('bcrypt')
+const { sign, verify } = require('jsonwebtoken')
+const { encryption: { jwt } } = require('../../../config')
 
-const encrypt = (data) => {
-  return bcrypt.hashSync(data, 10)
+module.exports.sign = (data, { secret, expiresIn } = jwt) => {
+  const token = sign(data, secret)
+
+  return token;
 }
 
-console.log(encrypt('123123'))
+module.exports.verify = (encoded, { secret } = jwt) => {
+  try {
+    const decoded = verify(encoded, secret)
+    return decoded;
+  } catch(err) {
+    console.error("Error while verifying token", err)
+  }
+}
