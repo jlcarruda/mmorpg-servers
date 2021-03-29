@@ -15,7 +15,10 @@ const interpret = (client, packet_parser, datapacket) => {
 
   console.log(`[PACKET] Interpret: ${header.command}`)
 
-  interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+  // If command is implemented
+  if (interpreters[header.command.toUpperCase()]) {
+    interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+  }
 }
 
 module.exports = packet = {
