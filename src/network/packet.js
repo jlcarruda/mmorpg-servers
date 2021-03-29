@@ -15,7 +15,10 @@ const interpret = (client, packet_parser, datapacket) => {
 
   console.log(`[PACKET] Interpret: ${header.command}`)
 
-  interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+  // If command is implemented
+  if (interpreters[header.command.toUpperCase()]) {
+    interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+  }
 }
 
 module.exports = packet = {
@@ -32,8 +35,8 @@ module.exports = packet = {
           buffer = Buffer.concat([buffer, zeroBuffer], buffer.length + 1)
           break;
         case 'number':
-          buffer = Buffer.alloc(2)
-          buffer.writeUInt16LE(param, 0)
+          buffer = Buffer.alloc(4)
+          buffer.writeInt32LE(param, 0)
           break;
         default:
           console.warn(`WARNING: type of param not supported: ${typeof param}`)

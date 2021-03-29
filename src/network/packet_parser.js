@@ -13,5 +13,9 @@ module.exports = {
     .string('token', stringOptions),
   char_selected: new Parser().skip(1)
     .string('command', stringOptions)
-    .string('char_id', stringOptions)
+    .string('char_id', stringOptions),
+  pos_update: new Parser().skip(1)
+    .string('command', stringOptions)
+    .int32le('x', stringOptions)
+    .int32le('y', stringOptions)
 }

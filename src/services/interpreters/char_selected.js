@@ -1,5 +1,6 @@
 const now = require('performance-now')
 const Parser = require('../../network/packet_parser')
+const { Character } = require('../../models')
 const { destroySocket } = require('../utils/socket')
 
 module.exports = async (client, { build }, datapacket) => {
@@ -15,7 +16,7 @@ module.exports = async (client, { build }, datapacket) => {
       return destroySocket(client)
     }
 
-    client.character = character
+    client.character = await Character.findById(character._id)
     console.log("Character selected", JSON.stringify(character))
     client.socket.write(build(['CHAR_SELECTED', 'TRUE', now().toString()]))
   } catch (error) {
