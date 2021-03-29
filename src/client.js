@@ -8,10 +8,7 @@ class Client {
   }
 
   initialize() {
-    this.self = this;
-
-    this.self.socket.write(packet.build(["REQUEST_HANDSHAKE"]))
-
+    this.socket.write(packet.build(["REQUEST_HANDSHAKE"]))
     console.log('client initiated')
   }
 
@@ -20,12 +17,14 @@ class Client {
     return (data) => { packet.parse(client, data) }
   }
 
-  onError(err) {
-    console.log("Client error", err)
+  onError() {
+    const client = this;
+    return (err) => { console.log("Client error", err) }
   }
 
   onEnd() {
-    console.log("Client closed")
+    const client = this;
+    return () => {}
   }
 }
 

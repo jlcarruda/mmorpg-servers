@@ -12,9 +12,9 @@ const startSocketServer = () => new Promise((resolve) => {
       const client = new Client(socket)
       client.initialize()
   
-      socket.on("error", client.onError)
+      socket.on("error", client.onError())
   
-      socket.on("end", client.onEnd)
+      socket.on("end", client.onEnd())
   
       socket.on("data", client.onData())
     })
