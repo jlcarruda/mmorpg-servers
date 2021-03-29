@@ -25,6 +25,8 @@ const ValuesSchema = new Schema({
     type: Number,
     default: 100
   }
+}, {
+  _id: false
 })
 
 const schema = new Schema({
@@ -42,8 +44,6 @@ const schema = new Schema({
   },
   position: PositionSchema,
   values: ValuesSchema,
-}, {
-  _id: false
 })
 
 module.exports = models.Character || model('Character', schema)
