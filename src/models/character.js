@@ -4,6 +4,27 @@ const PositionSchema = new Schema({
   x: Number,
   y: Number,
   current_room: String,
+}, {
+  _id: false
+})
+
+const ValuesSchema = new Schema({
+  hp: {
+    type: Number,
+    default: 100
+  },
+  max_hp: {
+    type: Number,
+    default: 100
+  },
+  stamina: {
+    type: Number,
+    default: 100
+  },
+  max_stamina: {
+    type: Number,
+    default: 100
+  }
 })
 
 const schema = new Schema({
@@ -18,7 +39,10 @@ const schema = new Schema({
     type: String,
     enum: [ "player", "mod", "gm", "creator" ]
   },
-  position: PositionSchema
+  position: PositionSchema,
+  values: ValuesSchema,
+}, {
+  _id: false
 })
 
 module.exports = models.Character || model('Character', schema)
