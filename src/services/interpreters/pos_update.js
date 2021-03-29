@@ -17,7 +17,7 @@ module.exports = async (client, { build }, datapacket) => {
   // Verify if user does not manipulated position on client side
   const notValid = validateMovement(client.character.position, x, y)
   if (notValid) {
-    client.socket.write(build['POS_DESYNC', charX, charY, now().toString()])
+    client.socket.write(build(['POS_DESYNC', charX, charY, now().toString()]))
   } else {
     client.character.position.x = x
     client.character.position.y = y
