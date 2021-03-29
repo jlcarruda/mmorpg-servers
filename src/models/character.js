@@ -37,7 +37,8 @@ const schema = new Schema({
   },
   role: {
     type: String,
-    enum: [ "player", "mod", "gm", "creator" ]
+    enum: [ "player", "mod", "gm", "creator" ],
+    default: "player"
   },
   position: PositionSchema,
   values: ValuesSchema,

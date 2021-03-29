@@ -11,13 +11,13 @@ const { verify } = require('../services/utils/encrypt')
 const zeroBuffer = Buffer.from('00', 'hex')
 
 const interpret = (client, packet_parser, datapacket) => {
-  let header = Parser.header.parse(datapacket)
+  let { command } = Parser.header.parse(datapacket)
 
-  console.log(`[PACKET] Interpret: ${header.command}`)
+  console.log(`[PACKET] Interpret: ${command}`)
 
   // If command is implemented
-  if (interpreters[header.command.toUpperCase()]) {
-    interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+  if (interpreters[command.toUpperCase()]) {
+    interpreters[command.toUpperCase()](client, packet_parser, datapacket)
   }
 }
 
