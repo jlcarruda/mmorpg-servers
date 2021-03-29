@@ -15,10 +15,10 @@ module.exports = async (client, { build }, datapacket) => {
   const { x: charX, y: charY } = client.character.position
 
   // Verify if user does not manipulated position on client side
-  if (!validateMovement(client.character.position, x, y)) {
+  const notValid = validateMovement(client.character.position, x, y)
+  if (notValid) {
     client.socket.write(build['POS_DESYNC', charX, charY, now().toString()])
   } else {
-
     client.character.position.x = x
     client.character.position.y = y
     
@@ -34,8 +34,8 @@ function validateMovement({ x, y }, targetX, targetY) {
   
   const positionThreshold = movement_max_desync * tile_size
 
-  return (targetX < x - positionThreshold ||
-     targetX > x + positionThreshold ||
-     targetY < y - positionThreshold || 
-     targetY > y + positionThreshold)
+  return (targetX <= x - positionThreshold ||
+     targetX >= x + positionThreshold ||
+     targetY <= y - positionThreshold || 
+     targetY >= y + positionThreshold)
 }
