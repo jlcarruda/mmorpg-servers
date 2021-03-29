@@ -5,6 +5,8 @@ class Client {
   
   constructor(socket) {
     this.socket = socket;
+    this.character = null;
+    this.user = null;
   }
 
   initialize() {
