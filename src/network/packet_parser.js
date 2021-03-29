@@ -16,6 +16,6 @@ module.exports = {
     .string('char_id', stringOptions),
   pos_update: new Parser().skip(1)
     .string('command', stringOptions)
-    .uint32le('x', stringOptions)
-    .uint32le('y', stringOptions)
+    .int32('x', stringOptions)
+    .int32('y', stringOptions)
 }

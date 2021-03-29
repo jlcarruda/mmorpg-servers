@@ -7,8 +7,10 @@ const env = args.env || "local"
 
 const config = {
   game: {
-    starting_zone: "rm_start",
-    maps
+    starting_zone: "rm_starting_town",
+    maps,
+    movement_max_desync: process.env.MOVEMENT_DESYNC_PACKET_THRESHOLD,
+    tile_size: 32,
   },
   encryption: {
     jwt: {
