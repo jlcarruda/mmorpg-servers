@@ -10,7 +10,7 @@ const config = {
     starting_zone: "rm_starting_town",
     maps,
     movement_max_desync: process.env.MOVEMENT_DESYNC_PACKET_THRESHOLD,
-    tile_size: 32,
+    tile_size: process.env.MOVEMENT_TILE_SIZE,
   },
   encryption: {
     jwt: {
