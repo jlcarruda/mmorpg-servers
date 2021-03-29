@@ -15,7 +15,7 @@ module.exports = async (client, { build }, datapacket) => {
   const { username, id } = decoded
   
   try {
-    const user = await User.findById(id).select('-password').lean()
+    const user = await User.findById(id).select('-password').populate('characters').lean()
     if (!user || user.username !== username) {
       console.error('[HANDSHAKE] User not found. Closing socket connection')
       return destroySocket(client)
