@@ -17,5 +17,9 @@ module.exports = {
   pos_update: new Parser().skip(1)
     .string('command', stringOptions)
     .int32le('x', stringOptions)
-    .int32le('y', stringOptions)
+    .int32le('y', stringOptions),
+  pos_update_run: new Parser().skip(1)
+    .string('command', stringOptions)
+    .int32le('x', stringOptions)
+    .int32le('y', stringOptions),
 }

@@ -2,22 +2,25 @@ const Parser = require('./packet_parser')
 const interpreters = require('../services/interpreters')
 const { verify } = require('../services/utils/encrypt')
 /**
- *  Socket packets on GMS is handled in this way: 
- *   - A long buffer with all packets glued
- *   
+ *  Socket packets on GMS is handled in this way: A long buffer with all packets (chunks) glued
+ * 
+ *   THe first byte of the BUFFER is its total size, so we know how much bytes to read  
+ * 
  *   The first byte of the packet is its size, so we know how many bytes to read
+ *   The last byte is a zero byte, to indicate the end of a packet.
+ *   
  */
 
 const zeroBuffer = Buffer.from('00', 'hex')
 
 const interpret = (client, packet_parser, datapacket) => {
-  let header = Parser.header.parse(datapacket)
+  let { command } = Parser.header.parse(datapacket)
 
-  console.log(`[PACKET] Interpret: ${header.command}`)
+  console.log(`[PACKET] Interpret: ${command}`)
 
   // If command is implemented
-  if (interpreters[header.command.toUpperCase()]) {
-    interpreters[header.command.toUpperCase()](client, packet_parser, datapacket)
+  if (interpreters[command.toUpperCase()]) {
+    interpreters[command.toUpperCase()](client, packet_parser, datapacket)
   }
 }
 

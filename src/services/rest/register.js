@@ -49,7 +49,7 @@ async function createMockCharacter(user) {
           x,
           y,
           current_room: startingTown.room
-        }
+        },
       })
       await user.setCharacter(character)
     } catch(err) {
