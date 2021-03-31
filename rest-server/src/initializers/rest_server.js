@@ -8,16 +8,16 @@ const initialize = ({ host, port }) => new Promise((resolve, reject) => {
   console.info('[REST] Initializing Rest server ...')
   try {
     const app = express()
-    
+
     app.use(cors())
-    
+
     app.use(express.urlencoded({ extended: false }))
     app.use(express.json())
     app.use(helmet())
     app.use(errors.middleware.crashProtector())
 
     routes(app)
-  
+
     app.listen(port, host, () => {
       console.info(`[REST] Server initialized @ ${host}:${port}`)
       resolve()

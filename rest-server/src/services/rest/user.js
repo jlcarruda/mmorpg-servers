@@ -1,27 +1,40 @@
-const authorizer = require('./middlewares/is_user_authenticated')
-const { Character, User } = require('../../models')
+const isAuthenticated = require('./middlewares/is_user_authenticated')
+const { Character, User } = require('../../../../auth-server/src/models')
+
+function checkUserId(req, res, next) {
+  const { auth: { id } } = res.locals;
+  const { userId } = req.params;
+
+  if (toString(userId) !== toString(id)) {
+    return res.status(403).json({
+      message: "Forbidden"
+    })
+  }
+
+  next()
+}
 
 module.exports = (app) => {
 
-  app.get('/:user_id/characters', authorizer, async (req, res, next) => {
-    const { auth: { id } } = res.locals;
-    const { user_id } = req.params;
-    
+  app.get('/users/:userId', isAuthenticated, checkUserId, async (req, res, next) => {
     try {
-      if (toString(user_id) !== toString(id)) {
-        res.status(403).json({
-          message: "Forbidden"
-        })
-      } else {
-        const user = await User.findById(id).select('-password').populate('characters').lean()
-        
-        res.status(200).json({
-          data: {
-            characters: user.characters || []
-          }
-        })
-      }
-  
+      res.data(200).json({
+        data: res.locals.auth
+      })
+    } catch(err) {
+      console.error('[REST] An error has ocurred on /users/:userId route', err)
+      next(err)
+    }
+  })
+
+  app.get('/users/:userId/characters', isAuthenticated, checkUserId, async (req, res, next) => {
+    try {
+      const user = await User.findById(id).select('-password').populate('characters').lean()
+      res.status(200).json({
+        data: {
+          characters: user && user.characters || []
+        }
+      })
       next()
     } catch(err) {
       console.error('[GET CHARACTERS] An error ocurred', err)

@@ -5,7 +5,6 @@ const user = require('./user')
 
 module.exports = (app) => {
   console.info('[REST] Setting routes ...')
-  signin(app)
   register(app)
   user(app)
   healthCheck(app)

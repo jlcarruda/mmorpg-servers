@@ -1,3 +1,4 @@
+const { User } = require('../../../models')
 const { verify } = require('../../utils/jwt')
 
 module.exports = async (req, res, next) => {
@@ -15,15 +16,13 @@ module.exports = async (req, res, next) => {
           message: "Forbidden"
         })
       }
-  
+
       const { id, username } = verify(token)
 
+      const { _id: user_id, ...user } = await User.findOne({ username, id }).select('-password -characters').lean()
 
-      res.locals.auth = {
-        id,
-        username,
-      }
-  
+      res.locals.auth = { ...user, id: user_id }
+
       next()
     }
   } catch(err) {
