@@ -13,10 +13,8 @@ const config = {
     }
   },
   server: {
-    rest: {
-      host: process.env.HOST,
-      port: process.env.PORT,
-    }
+    host: process.env.HOST,
+    port: process.env.PORT,
   },
   database: {
     uri: process.env.DATABASE_URI
