@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+const maps = require('./src/game/maps')
+
 module.exports = {
   encryption: {
     jwt: process.env.JWT_SECRET
@@ -14,4 +16,7 @@ module.exports = {
     movement_max_desync: process.env.MOVEMENT_DESYNC_PACKET_THRESHOLD,
     tile_size: process.env.MOVEMENT_TILE_SIZE,
   },
+  connectors: {
+    rest: process.env.REST_SERVER
+  }
 }

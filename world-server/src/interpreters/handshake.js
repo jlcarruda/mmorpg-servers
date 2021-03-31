@@ -1,28 +1,34 @@
 const now = require('performance-now')
 const { verify } = require('../common/jwt')
 const Parser = require('../network/packet_parser')
-// const { User } = require('../../models')
+const { users } = require('../connectors/rest_connector')
 
 module.exports = async (client, { build }, datapacket) => {
   const data = Parser.handshake.parse(datapacket)
-  const decoded = verify(data.token)
+  // const decoded = verify(data.token)
 
-  if (!decoded) {
-    client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
-    return destroySocket(client)
-  }
+  // if (!decoded) {
+  //   client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
+  //   return destroySocket(client)
+  // }
 
   const { username, id } = decoded
 
   try {
+    const { status, data: responseData } = users.getUser(id, data.token)
+    if (status !== 200) {
+      console.error("[GAMEWORLD] Error while getting user from Rest Server")
+      return client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
+    }
+
+    client.user = responseData.data
+    client.socket.write(build(['AUTHORIZED', now().toString()]))
     // const user = await User.findById(id).select('-password').populate('characters').lean()
     // if (!user || user.username !== username) {
     //   console.error('[HANDSHAKE] User not found. Closing socket connection')
     //   return destroySocket(client)
     // }
 
-    // client.user = user
-    // client.socket.write(build(['AUTHORIZED', now().toString()]))
   } catch (error) {
     throw error
   }

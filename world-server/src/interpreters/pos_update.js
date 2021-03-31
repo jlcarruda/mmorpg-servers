@@ -12,11 +12,11 @@ module.exports.POS_UPDATE = async (client, { build }, datapacket, isRunning = fa
   }
 
   const { x, y } = data
-  
+
   if (!client.character) {
     return destroySocket(client)
   }
-  
+
   const { x: charX, y: charY } = client.character.position
 
   // Verify if user did not manipulated position on client side
@@ -26,9 +26,9 @@ module.exports.POS_UPDATE = async (client, { build }, datapacket, isRunning = fa
   } else {
     client.character.position.x = x
     client.character.position.y = y
-    
+
     client.character.save()
-    
+
     client.socket.write(build(['POS_OK', x, y, now().toString()]))
   }
 
@@ -40,11 +40,11 @@ module.exports.POS_UPDATE_RUN = (client, packet, datapacket) => {
 
 function validateMovement({ x, y }, targetX, targetY, isRunning) {
   const { game: { movement_max_desync, tile_size } } = config
-  
+
   const positionThreshold = (isRunning ? movement_max_desync * 2 : movement_max_desync) * tile_size
 
   return (targetX <= x - positionThreshold ||
      targetX >= x + positionThreshold ||
-     targetY <= y - positionThreshold || 
+     targetY <= y - positionThreshold ||
      targetY >= y + positionThreshold)
 }

@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "binary-parser": "^1.7.0",
     "common-errors": "^1.2.0",
     "dotenv": "^8.2.0",
