@@ -2,10 +2,18 @@
   "name": "mmorpg-blockchain-world-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "binary-parser": "^1.7.0",
+    "common-errors": "^1.2.0",
+    "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "minimist": "^1.2.5",
+    "performance-now": "^2.1.0"
+  }
 }
