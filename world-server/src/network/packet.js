@@ -3,12 +3,12 @@ const interpreters = require('../interpreters')
 const { verify } = require('../common/jwt')
 /**
  *  Socket packets on GMS is handled in this way: A long buffer with all packets (chunks) glued
- * 
- *   THe first byte of the BUFFER is its total size, so we know how much bytes to read  
- * 
+ *
+ *   THe first byte of the BUFFER is its total size, so we know how much bytes to read
+ *
  *   The first byte of the packet is its size, so we know how many bytes to read
  *   The last byte is a zero byte, to indicate the end of a packet.
- *   
+ *
  */
 
 const zeroBuffer = Buffer.from('00', 'hex')

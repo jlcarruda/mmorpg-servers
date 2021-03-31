@@ -1,5 +1,7 @@
-require('dotenv').config()
-
+const config = require('./config')
 const { initialize } = require('./src/initializer')
 
-initialize({ port: process.env.PORT, host: process.env.HOST })
+const { server } = config
+
+console.log('[GAMEWORLD] Initializing server ...')
+initialize(server)
