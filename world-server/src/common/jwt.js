@@ -1,7 +1,7 @@
 const { sign, verify } = require('jsonwebtoken')
 const { encryption: { jwt } } = require('../../config')
 
-module.exports.sign = (data, { secret, expiresIn } = jwt) => {
+module.exports.sign = (data, { secret } = jwt) => {
   const token = sign(data, secret)
 
   return token;
