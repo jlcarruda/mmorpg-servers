@@ -2,6 +2,12 @@ const isAuthenticated = require('./middlewares/is_user_authenticated')
 const { Character, User } = require('../../../../auth-server/src/models')
 
 function checkUserId(req, res, next) {
+  if (!res.locals.auth) {
+    return res.status(401).json({
+      message: "Unauthorized"
+    })
+  }
+
   const { auth: { id } } = res.locals;
   const { userId } = req.params;
 
@@ -18,7 +24,7 @@ module.exports = (app) => {
 
   app.get('/users/:userId', isAuthenticated, checkUserId, async (req, res, next) => {
     try {
-      res.data(200).json({
+      res.status(200).json({
         data: res.locals.auth
       })
     } catch(err) {

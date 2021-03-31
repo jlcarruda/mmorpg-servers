@@ -18,6 +18,14 @@ const initialize = ({ host, port }) => new Promise((resolve, reject) => {
 
     routes(app)
 
+    app.use((error, req, res, next) => {
+      console.error("[REST] Failed request")
+
+      return res.status(502).json({
+        message: "Bad Gateway"
+      })
+    })
+
     app.listen(port, host, () => {
       console.info(`[REST] Server initialized @ ${host}:${port}`)
       resolve()

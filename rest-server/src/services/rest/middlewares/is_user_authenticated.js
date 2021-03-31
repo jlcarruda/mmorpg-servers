@@ -19,9 +19,13 @@ module.exports = async (req, res, next) => {
 
       const { id, username } = verify(token)
 
-      const { _id: user_id, ...user } = await User.findOne({ username, id }).select('-password -characters').lean()
+      const user = await User.findById(id).select('-password -characters').lean()
 
-      res.locals.auth = { ...user, id: user_id }
+      if (user && user.username === username) {
+        const { _id, ...userRetrieved } = user
+
+        res.locals.auth = { ...userRetrieved, id: _id }
+      }
 
       next()
     }
