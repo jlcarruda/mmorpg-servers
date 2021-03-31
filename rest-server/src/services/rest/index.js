@@ -1,4 +1,3 @@
-const signin = require('./signin')
 const register = require('./register')
 const healthCheck = require('./health-check')
 const user = require('./user')

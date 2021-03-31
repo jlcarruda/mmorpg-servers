@@ -1,5 +1,5 @@
 const now = require('performance-now');
-const packet = require('../network/packet');
+const packet = require('./network/packet');
 
 class Client {
   constructor(socket) {

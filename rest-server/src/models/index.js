@@ -1,7 +1,7 @@
 const User = require('./user')
 const Character = require('./character')
 
-module.exports = { 
+module.exports = {
   User,
   Character,
 }
