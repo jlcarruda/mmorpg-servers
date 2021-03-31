@@ -1,9 +1,9 @@
 
 module.exports = (app) => {
-  console.info('[REST] Setting routes ...')
+  console.info('[AUTH] Setting routes ...')
   // signin(app)
   // register(app)
   // user(app)
   // healthCheck(app)
-  console.info('[REST] Routes setted!')
+  console.info('[AUTH] Routes setted!')
 }

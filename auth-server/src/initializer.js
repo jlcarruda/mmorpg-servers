@@ -18,11 +18,11 @@ const initialize = ({ host, port }) => new Promise((resolve, reject) => {
     routes(app)
 
     app.listen(port, host, () => {
-      console.info(`[REST] Server initialized @ ${host}:${port}`)
+      console.info(`[AUTH] Server initialized @ ${host}:${port}`)
       resolve()
     })
   } catch (error) {
-    console.error('[REST] Server failed to initialize', error)
+    console.error('[AUTH] Server failed to initialize', error)
     reject(error)
   }
 })
