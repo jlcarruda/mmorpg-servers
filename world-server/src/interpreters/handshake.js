@@ -12,10 +12,10 @@ module.exports = async (client, { build }, datapacket) => {
   //   return destroySocket(client)
   // }
 
-  const { username, id } = decoded
+  const { token, id } = data
 
   try {
-    const { status, data: responseData } = users.getUser(id, data.token)
+    const { status, data: responseData } = users.getUser(id, token)
     if (status !== 200) {
       console.error("[GAMEWORLD] Error while getting user from Rest Server")
       return client.socket.write(packet.build(["HANDSHAKE_FAIL"]))

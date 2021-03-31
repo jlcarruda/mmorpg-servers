@@ -18,7 +18,7 @@ module.exports = (app) => {
       } else {
         const { password, ...responseUser } = user
 
-        const token = sign({ username: user.username, id: user._id })
+        const token = sign({ username: user.username, id: user._id }, )
         return res.status(200).json({
           data: {
             ...responseUser
