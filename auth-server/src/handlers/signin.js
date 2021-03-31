@@ -1,5 +1,5 @@
-const { User } = require('../../models')
-const { sign } = require('../utils/jwt')
+const { User } = require('../../src/models')
+const { sign } = require('../../src/utils/jwt')
 
 module.exports = (app) => {
   app.post('/auth', async (req, res, next) => {

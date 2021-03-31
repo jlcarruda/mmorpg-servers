@@ -7,5 +7,10 @@ module.exports = {
   server: {
     port: process.env.PORT,
     host: process.env.HOST
+  },
+  encryption: {
+    jwt: {
+      secret: process.env.JWT_SECRET
+    }
   }
 }
