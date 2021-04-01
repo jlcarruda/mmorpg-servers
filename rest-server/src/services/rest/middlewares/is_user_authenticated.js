@@ -19,12 +19,25 @@ module.exports = async (req, res, next) => {
 
       const { id, username } = verify(token)
 
-      const user = await User.findById(id).select('-password -characters').lean()
+      // If a user is trying to access data from another user
+      if (req.params.userId && id !== req.params.userId) {
+        return res.status(403).json({
+          message: "Forbidden"
+        })
+      }
+
+      const user = await User.findById(id).select('-password').populate('characters').lean()
 
       if (user && user.username === username) {
         const { _id, ...userRetrieved } = user
 
         res.locals.auth = { ...userRetrieved, id: _id }
+      } else {
+        return res.status(401).json({
+          data: {
+            message: "Unauthorized"
+          }
+        })
       }
 
       next()

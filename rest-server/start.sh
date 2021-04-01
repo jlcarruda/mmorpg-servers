@@ -1,2 +1,2 @@
 echo "IGNITING Rest server ..."
-npm start
+npm run debug

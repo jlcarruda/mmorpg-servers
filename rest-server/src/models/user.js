@@ -37,7 +37,7 @@ schema.pre('save', async function(next) {
 
 schema.statics.register = async function(username, password) {
   try {
-    
+
     const user = await this.create({
       username,
       password,
@@ -65,7 +65,7 @@ schema.statics.authenticate = async function(username, password) {
     if (!user) {
       return
     }
-    
+
     const passwordMatch = await bcrypt.compare(password, user.password)
 
     if (!passwordMatch) {
@@ -86,7 +86,7 @@ schema.methods.setCharacter = async function(character) {
         ...this.characters,
         character
       ]
-  
+
       await this.save()
     }
   } catch(err) {
