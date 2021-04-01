@@ -3,7 +3,7 @@ const { sign } = require('../../src/utils/jwt')
 
 module.exports = (app) => {
   app.post('/auth', async (req, res, next) => {
-    console.log("[AUTH] - Request received")
+    console.log("[AUTH] - Authentication request received")
     const wrongCreds = {
       data: {
         message: "Wrong credentials"
@@ -19,6 +19,7 @@ module.exports = (app) => {
         const { password, ...responseUser } = user
 
         const token = sign({ username: user.username, id: user._id }, )
+        console.log("[AUTH] User authenticated successfully")
         return res.status(200).json({
           data: {
             ...responseUser
