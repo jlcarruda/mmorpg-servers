@@ -5,20 +5,17 @@ const { users } = require('../connectors/rest_connector')
 
 module.exports = async (client, { build }, datapacket) => {
   const data = Parser.handshake.parse(datapacket)
-  // const decoded = verify(data.token)
-
-  // if (!decoded) {
-  //   client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
-  //   return destroySocket(client)
-  // }
 
   const { token, id } = data
 
   try {
-    const { status, data: responseData } = users.getUser(id, token)
+    const response = await users.getUser(id, token)
+    const { status, data: responseData } = response
     if (status !== 200) {
-      console.error("[GAMEWORLD] Error while getting user from Rest Server")
-      return client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
+      console.error(`[GAMEWORLD] Error while getting user from Rest Server. Server responded with ${status || 'no'} status`)
+      console.log(responseData)
+      client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
+      return destroySocket(client)
     }
 
     client.user = responseData.data

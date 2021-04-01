@@ -1,6 +1,5 @@
 const now = require('performance-now')
 const Parser = require('../network/packet_parser')
-// const { Character } = require('../../models')
 const { destroySocket } = require('../socket')
 
 module.exports = async (client, { build }, datapacket) => {
