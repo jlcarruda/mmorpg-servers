@@ -1,7 +1,11 @@
 const config = require('./config')
-const { initialize } = require('./src/initializer')
+const { initialize: serverInitializer } = require('./src/initializer')
+const { initialize: databaseInitializer } = require('./src/database')
 
-const { server } = config
+const { server, database } = config
 
 console.log('[GAMEWORLD] Initializing server ...')
-initialize(server)
+module.exports = (async () => {
+  await databaseInitializer(database)
+  await serverInitializer(server)
+})()

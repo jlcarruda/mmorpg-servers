@@ -2,6 +2,7 @@ const now = require('performance-now')
 const Parser = require('../network/packet_parser')
 const { destroySocket } = require('../socket')
 const config = require('../../config')
+const { Character } = require('../models')
 
 module.exports.POS_UPDATE = async (client, { build }, datapacket, isRunning = false) => {
   let data;
@@ -24,12 +25,21 @@ module.exports.POS_UPDATE = async (client, { build }, datapacket, isRunning = fa
   if (notValid) {
     client.socket.write(build(['POS_DESYNC', charX, charY, now().toString()]))
   } else {
-    client.character.position.x = x
-    client.character.position.y = y
+    try  {
+      await Character.findByIdAndUpdate(client.character._id,  {
+        position: {
+          x,
+          y,
+          current_room: client.character.position.current_room
+        }
+      })
 
-    client.character.save()
-
-    client.socket.write(build(['POS_OK', x, y, now().toString()]))
+      client.character.position.x = x
+      client.character.position.y = y
+      client.socket.write(build(['POS_OK', x, y, now().toString()]))
+    } catch(err) {
+      client.socket.write(build(['POS_DESYNC', charX, charY, now().toString()]))
+    }
   }
 
 }

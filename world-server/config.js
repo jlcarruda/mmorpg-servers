@@ -18,5 +18,8 @@ module.exports = {
   },
   connectors: {
     rest: process.env.REST_SERVER
+  },
+  database: {
+    uri: process.env.DATABASE_URI
   }
 }
