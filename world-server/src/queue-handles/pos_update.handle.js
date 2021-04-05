@@ -2,6 +2,7 @@ const { Character } = require('../models')
 const config = require('../../config')
 const now = require('performance-now')
 const packetParser = require('../network/packet')
+const ClientPool = require('../network/client-pool')
 
 module.exports = async (job) => {
   console.log("Job Switch", job.data.command)
@@ -14,33 +15,34 @@ module.exports = async (job) => {
 }
 
 async function pos_update({ client, command, packet }, isRunning) {
-  console.log("Job running")
-  const { x: charX, y: charY } = client.character.position
+  const pool = ClientPool.getInstance()
+  const clientObj = pool.findById(client.id)
+  const { x: charX, y: charY } = clientObj.character.position
   console.log("CHAR POS", charX, charY)
   const { x, y } = packet
   console.log("PACKET", packet, x, y)
-  const notValid = validateMovement(client.character.position, x, y, isRunning)
+  const notValid = validateMovement(clientObj.character.position, x, y, isRunning)
   console.log("Not valid? ", notValid)
   if (notValid) {
-    client.socket.write(packetParser.build(['POS_DESYNC', charX, charY, now().toString()]))
+    clientObj.socket.write(packetParser.build(['POS_DESYNC', charX, charY, now().toString()]))
   } else {
     try  {
       console.log("running pos update")
-      await Character.findByIdAndUpdate(client.character._id,  {
+      await Character.findByIdAndUpdate(clientObj.character._id,  {
         position: {
           x,
           y,
-          current_room: client.character.position.current_room
+          current_room: clientObj.character.position.current_room
         }
       })
 
-      client.character.position.x = x
-      client.character.position.y = y
-      // await client.character.save()
-      client.socket.write(packetParser.build(['POS_OK', x, y, now().toString()]))
+      clientObj.character.position.x = x
+      clientObj.character.position.y = y
+      // await clientObj.character.save()
+      clientObj.socket.write(packetParser.build(['POS_OK', x, y, now().toString()]))
     } catch(err) {
       console.log("ERROR WHILE SAVING POSITION", err)
-      client.socket.write(packetParser.build(['POS_DESYNC', charX, charY, now().toString()]))
+      clientObj.socket.write(packetParser.build(['POS_DESYNC', charX, charY, now().toString()]))
     }
   }
 }
