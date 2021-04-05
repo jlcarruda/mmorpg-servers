@@ -38,23 +38,18 @@ class ClientPool {
       return true
     })
 
-    if (index) {
+    if (index !== null) {
+      console.info(`[GAMEWORLD] Removing client ${id} from pool`)
       this.pool.slice(index, 1)
+    } else {
+      console.info(`[GAMEWORLD] Client with ${id} id does not exist in pool`)
     }
   }
 
   add(client) {
-    if (client instanceof Client) {
-      this.pool.push(client)
-    }
+    this.pool.push(client)
   }
 
-  destroy(id) {
-    const client = this.findById(id)
-    if (client) {
-      this.remove(id)
-    }
-  }
 }
 
 module.exports = ClientPool

@@ -22,5 +22,8 @@
     "performance-now": "^2.1.0",
     "redis": "^3.1.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "bee-queue-ui": "^0.2.2"
   }
 }

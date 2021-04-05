@@ -18,27 +18,16 @@ async function pos_update({ client, command, packet }, isRunning) {
   const pool = ClientPool.getInstance()
   const clientObj = pool.findById(client.id)
   const { x: charX, y: charY } = clientObj.character.position
-  console.log("CHAR POS", charX, charY)
   const { x, y } = packet
-  console.log("PACKET", packet, x, y)
   const notValid = validateMovement(clientObj.character.position, x, y, isRunning)
-  console.log("Not valid? ", notValid)
   if (notValid) {
     clientObj.socket.write(packetParser.build(['POS_DESYNC', charX, charY, now().toString()]))
   } else {
     try  {
-      console.log("running pos update")
-      await Character.findByIdAndUpdate(clientObj.character._id,  {
-        position: {
-          x,
-          y,
-          current_room: clientObj.character.position.current_room
-        }
-      })
 
       clientObj.character.position.x = x
       clientObj.character.position.y = y
-      // await clientObj.character.save()
+      await clientObj.character.save()
       clientObj.socket.write(packetParser.build(['POS_OK', x, y, now().toString()]))
     } catch(err) {
       console.log("ERROR WHILE SAVING POSITION", err)

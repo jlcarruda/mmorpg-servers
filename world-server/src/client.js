@@ -1,6 +1,7 @@
 const now = require('performance-now');
 const packet = require('./network/packet');
 const { v4: uuidv4 } = require('uuid')
+const ClientPool = require('./network/client-pool')
 
 class Client {
   constructor(socket) {
@@ -22,12 +23,19 @@ class Client {
 
   onError() {
     const client = this;
-    return (err) => { console.log("Client error", err) }
+    return (err) => {
+      console.log("Client error", err)
+      const pool = ClientPool.getInstance()
+      pool.remove(client.id)
+    }
   }
 
   onEnd() {
     const client = this;
-    return () => {}
+    return () => {
+      const pool = ClientPool.getInstance()
+      pool.remove(client.id)
+    }
   }
 }
 
