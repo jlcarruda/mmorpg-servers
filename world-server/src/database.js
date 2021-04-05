@@ -6,6 +6,7 @@ const initialize = ({ uri }) => {
     mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: true
     }).then(() => {
       console.info("[GAMEWORLD] DB Connected!")
       resolve()

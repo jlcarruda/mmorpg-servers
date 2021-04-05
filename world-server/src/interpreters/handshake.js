@@ -3,7 +3,7 @@ const { verify } = require('../common/jwt')
 const Parser = require('../network/packet_parser')
 const { users } = require('../connectors/rest_connector')
 
-module.exports = async (client, { build }, datapacket) => {
+module.exports = async (client, heart, { build }, datapacket) => {
   const data = Parser.handshake.parse(datapacket)
 
   const { token, id } = data
@@ -19,6 +19,10 @@ module.exports = async (client, { build }, datapacket) => {
     }
 
     client.user = responseData.data
+    client.token = token
+
+
+
     client.socket.write(build(['AUTHORIZED', now().toString()]))
     // const user = await User.findById(id).select('-password').populate('characters').lean()
     // if (!user || user.username !== username) {

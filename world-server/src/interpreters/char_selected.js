@@ -2,22 +2,33 @@ const now = require('performance-now')
 const Parser = require('../network/packet_parser')
 const { destroySocket } = require('../socket')
 const { users } = require('../connectors/rest_connector')
+const { Character } = require('../models')
 
-module.exports = async (client, { build }, datapacket) => {
+module.exports = async (client, heart, { build }, datapacket) => {
   const data = Parser.char_selected.parse(datapacket)
 
-  const { token, char_id } = data
+  const { char_id, token } = data
 
   try {
-    const {status, data: character } = await users.getUserCharacter(client.user.id, char_id, token)
-    if (status !== 200 || !character) {
+    const {status, data: { data: user } } = await users.getUser(client.user.id, token)
+    let userHasChar = false
+    console.log("USER ", user)
+    user.characters.forEach(c => {
+      if (JSON.stringify(c._id) === JSON.stringify(char_id)){
+        userHasChar = true
+      }
+    })
+
+    if (status !== 200 || !userHasChar) {
       console.error('[CHAR SELECTED] Clients user does not have acces to this character. Closing socket connection')
       client.socket.write(build(['CHAR_SELECTED', 'FALSE', now().toString()]))
       return destroySocket(client)
     }
 
-    client.character = character.data
-    console.log("Character selected", JSON.stringify(character))
+    const character = await Character.findById(char_id)
+
+    client.character = character
+    console.log("Character selected", character)
     client.socket.write(build(['CHAR_SELECTED', 'TRUE', now().toString()]))
   } catch (error) {
     throw error
