@@ -15,9 +15,9 @@ const sharedConfig = {
 class WorldQueues {
   static queues = {};
 
-  static async createQueue(name, processHandle) {
+  static async createQueue(name, processHandle, config) {
     if (!WorldQueues.queues[name]) {
-      const q = new Queue(name, sharedConfig)
+      const q = new Queue(name, { ...sharedConfig, ...config })
       WorldQueues.queues[name] = q
       q.process(processHandle)
 
