@@ -4,7 +4,7 @@ const { destroySocket } = require('../socket')
 const { users } = require('../connectors/rest_connector')
 const { Character } = require('../models')
 
-module.exports = async (client, heart, { build }, datapacket) => {
+module.exports = async (client, datapacket, { build }) => {
   const data = Parser.char_selected.parse(datapacket)
 
   const { char_id, token } = data

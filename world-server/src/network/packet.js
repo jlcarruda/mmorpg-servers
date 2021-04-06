@@ -1,7 +1,6 @@
 const Parser = require('./packet_parser')
 const interpreters = require('../interpreters')
-const { verify } = require('../common/jwt')
-const Gameheart = require('../game/gameheart')
+
 /**
  *  Socket packets on GMS is handled in this way: A long buffer with all packets (chunks) glued
  *
@@ -14,14 +13,14 @@ const Gameheart = require('../game/gameheart')
 
 const zeroBuffer = Buffer.from('00', 'hex')
 
-const interpret = (client, packet_parser, datapacket) => {
+const interpret = (client, datapacket, packet) => {
   let { command } = Parser.header.parse(datapacket)
 
   console.log(`[PACKET] Interpret: ${command}`)
 
   // If command is implemented
   if (interpreters[command.toUpperCase()]) {
-    interpreters[command.toUpperCase()](client, null, packet_parser, datapacket)
+    interpreters[command.toUpperCase()](client, datapacket, packet)
   }
 }
 
@@ -66,7 +65,7 @@ module.exports = packet = {
       const packetSize = data.readUInt8(index)
       const extracted = Buffer.alloc(packetSize)
       data.copy(extracted, 0, index, index + packetSize)
-      interpret(client, packet, extracted)
+      interpret(client, extracted, packet)
       index += packetSize
     }
   },

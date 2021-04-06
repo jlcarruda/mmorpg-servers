@@ -1,11 +1,9 @@
 const now = require('performance-now')
 const Parser = require('../network/packet_parser')
 const { destroySocket } = require('../socket')
-const config = require('../../config')
-const { Character } = require('../models')
 const WorldQueues = require('../queue')
 
-module.exports.POS_UPDATE = async (client, heart, packet_parser, datapacket, isRunning = false) => {
+module.exports = async (client, datapacket, isRunning = false) => {
   let data;
   if (!isRunning) {
     data = Parser.pos_update.parse(datapacket)
@@ -18,7 +16,7 @@ module.exports.POS_UPDATE = async (client, heart, packet_parser, datapacket, isR
   }
 
   try {
-    await WorldQueues.createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, client, packet_parser })
+    await WorldQueues.createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, client })
   } catch(err) {
     console.error("ERROR WHILE CREATING JOB", err)
   }

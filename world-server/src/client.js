@@ -8,6 +8,8 @@ class Client {
     this.socket = socket;
     this.character = null;
     this.user = null;
+    this.charState = {};
+    this.lastCharStateUpdate = null;
     this.id = uuidv4()
   }
 

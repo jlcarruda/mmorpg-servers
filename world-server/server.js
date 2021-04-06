@@ -2,7 +2,7 @@ const config = require('./config')
 const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
 const WorldQueues = require('./src/queue')
-const posUpdateHandle = require('./src/queue-handles/pos_update.handle')
+const { posUpdateHandle, charUpdateHandle } = require('./src/queue-handles')
 
 const { server, database } = config
 
@@ -15,7 +15,7 @@ module.exports = (async () => {
     await serverInitializer(server)
     // Create queues
     await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle)
-    // await WorldQueues.createQueue("CHAR_UPDATE_Q", )
+    await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle)
   } catch (err) {
     console.err("Error while trying to initialize server", err)
     throw err
