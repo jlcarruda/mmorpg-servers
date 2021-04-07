@@ -1,14 +1,14 @@
 const now = require('performance-now')
-const Parser = require('../network/packet_parser')
+const Parser = require('../network/packet-parser')
 const { users } = require('../connectors/rest_connector')
 
 module.exports = async (client, datapacket, { build }) => {
   const data = Parser.handshake.parse(datapacket)
 
-  const { token, id } = data
+  const { token, user_id } = data
 
   try {
-    const response = await users.getUser(id, token)
+    const response = await users.getUser(user_id, token)
     const { status, data: responseData } = response
     if (status !== 200) {
       console.error(`[GAMEWORLD] Error while getting user from Rest Server. Server responded with ${status || 'no'} status`)

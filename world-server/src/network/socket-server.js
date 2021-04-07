@@ -1,25 +1,28 @@
-const Client = require('../client')
+const ClientFactory = require('../client-factory')
 const net = require('net')
 const ClientPool = require('./client-pool')
 
 let server;
-const startSocketServer = () => new Promise((resolve) => {
+const startSocketServer = (packet) => new Promise((resolve) => {
   const pool = ClientPool.getInstance()
   if (!server) {
     console.log('[GAMEWORLD] Creating socket server ...')
-    server = net.createServer((socket) => {
+    server = net.createServer(async (socket) => {
       console.log('[GAMEWORLD] Socket connected')
 
-      const client = new Client(socket)
-      client.initialize()
+      const client = ClientFactory.create(socket)
+      await pool.add(client)
 
-      socket.on("error", client.onError())
+      socket.on("error", (err) => {
+        console.log("Client error", err)
+        pool.remove(client.id)
+      })
 
-      socket.on("end", client.onEnd())
+      socket.on("end", () => {
+        pool.remove(client.id)
+      })
 
-      socket.on("data", client.onData())
-
-      pool.add(client)
+      socket.on("data", (data) => packet.parse(data))
     })
   }
 

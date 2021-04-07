@@ -26,7 +26,10 @@ class ClientPool {
   async findById(id) {
     try {
       const client = await _getAsync(id) //this.pool.filter(c => c.id === id)[0]
-      return client;
+      if (client) {
+        return JSON.parse(client);
+      }
+      return false
     } catch (err) {
       console.error('[GAMEWORLD] Error while retrieving client by id', err)
     }
@@ -34,7 +37,7 @@ class ClientPool {
     return false
   }
 
-  remove(id) {
+  async remove(id) {
     try {
       await _delAsync(id)
       return true
@@ -60,9 +63,9 @@ class ClientPool {
     // }
   }
 
-  add(client) {
+  async add(client) {
     try {
-      await _setAsync(client.id, client)
+      await _setAsync(client.id, JSON.stringify(client))
       return true
     } catch (error) {
       console.error('[GAMEWORLD] Error while adding client to the pool', err)

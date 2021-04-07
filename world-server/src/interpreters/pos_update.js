@@ -1,5 +1,5 @@
 const now = require('performance-now')
-const Parser = require('../network/packet_parser')
+const Parser = require('../network/packet-parser')
 const { destroySocket } = require('../socket')
 const WorldQueues = require('../queue')
 

@@ -1,6 +1,6 @@
 const packet = require('../network/packet')
 const ClientPool = require('../network/client-pool')
-const Parser = require('../network/packet_parser')
+const Parser = require('../network/packet-parser')
 
 module.exports = async (client, datapacket) => {
   const clientObj = ClientPool.getInstance().findById(client.id)

@@ -3,14 +3,18 @@ const packet = require('./network/packet');
 const { v4: uuidv4 } = require('uuid')
 const ClientPool = require('./network/client-pool')
 
-class Client {
-  constructor(socket) {
-    this.socket = socket;
-    this.character = null;
-    this.user = null;
-    this.charState = {};
-    this.lastCharStateUpdate = null;
-    this.id = uuidv4()
+class ClientFactory {
+  static create(socket) {
+    const client = {
+      socket: socket,
+      character: null,
+      user: null,
+      charState: {},
+      lastCharStateUpdate: null,
+      id: uuidv4(),
+    }
+
+    return client
   }
 
   initialize() {
@@ -19,8 +23,7 @@ class Client {
   }
 
   onData() {
-    const client = this;
-    return (data) => { packet.parse(client, data) }
+    return (data) => { packet.parse(data) }
   }
 
   onError() {
@@ -41,4 +44,4 @@ class Client {
   }
 }
 
-module.exports = Client
+module.exports = ClientFactory
