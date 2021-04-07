@@ -17,14 +17,11 @@ module.exports = (async () => {
     const config = {
       removeOnSuccess: true,
       removeOnFailure: true,
-      sendEvents: false,
-      storeJobs: false
     }
     await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
     await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
   } catch (err) {
-    console.err("Error while trying to initialize server", err)
+    console.error("Error while trying to initialize server", err)
     throw err
   }
-
 })()

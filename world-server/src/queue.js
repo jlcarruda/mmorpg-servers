@@ -17,28 +17,33 @@ class WorldQueues {
 
   static async createQueue(name, processHandle, config) {
     if (!WorldQueues.queues[name]) {
-      const q = new Queue(name, { ...sharedConfig, ...config })
-      WorldQueues.queues[name] = q
-      q.process(processHandle)
+      const q = new Queue(name, { ...sharedConfig, ...config, isWorker: false })
 
       q.on('error', (err) => {
         console.log(`A queue error happened: ${err.message}`);
       });
-    }
 
-    return WorldQueues.queues[name].ready()
+      qp.process(processHandle)
+
+      WorldQueues.queues[name] = { queue: q, processor: qp }
+    }
+    return WorldQueues.queues[name].queue.ready()
   }
 
   static getQueue(name) {
-    return WorldQueues.queues[name]
+    return WorldQueues.queues[name].queue
   }
 
-  static getQueues() {
+  static getProcessor(name) {
+    return WorldQueues.queues[name].processor
+  }
+
+  static getPool() {
     return WorldQueues.queues
   }
 
   static async createJob(queueName, data) {
-    const q = WorldQueues.queues[queueName]
+    const q = WorldQueues.queues[queueName].queue
     try {
       if (q) {
         const job = await q.createJob({ ...data, queue: q }).save()

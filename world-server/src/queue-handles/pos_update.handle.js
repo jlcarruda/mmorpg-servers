@@ -27,7 +27,6 @@ async function pos_update({ client, command, packet: packetReceived }, isRunning
 
       clientObj.character.position.x = x
       clientObj.character.position.y = y
-      await clientObj.character.save()
       clientObj.socket.write(packet.build(['POS_OK', x, y, now().toString()]))
     } catch(err) {
       console.log("ERROR WHILE SAVING POSITION", err)

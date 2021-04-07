@@ -11,5 +11,11 @@ module.exports = async (client, datapacket) => {
   clientObj.charState = state
   clientObj.lastCharStateUpdate = Date.now().toString()
 
+  clientObj.character.values = {
+    ...clientObj.character.values,
+    hp: state.attributes.hp,
+    stamina: state.attributes.stamina,
+  }
+
   console.log("Saved state of character")
 }
