@@ -58,3 +58,6 @@ function destroySocket(socket, retries = 0) {
     console.info("[SOCKET] Socket destroyed successfully")
   }
 }
+
+
+module.exports = SocketPool

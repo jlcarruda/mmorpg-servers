@@ -3,14 +3,15 @@ const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
 const WorldQueues = require('./src/queue')
 const ClientPool = require('./src/network/client-pool')
+const SocketPool = requirE('./src/network/socket-pool')
 const { posUpdateHandle, charUpdateHandle } = require('./src/queue-handles')
 const redis = require('redis')
 
 const { server, database, redis: {host: redisHost, port: redisPort} } = config
 
 const sharedRedisConnection = redis.createClient({
-  host,
-  port
+  host: redisHost,
+  port: redisPort
 })
 
 const sharedRedisConfig = {
@@ -24,6 +25,7 @@ module.exports = (async () => {
     await databaseInitializer(database)
 
     await serverInitializer(server)
+
     // Create queues
     const config = {
       ...sharedRedisConfig,
@@ -31,6 +33,7 @@ module.exports = (async () => {
       removeOnFailure: true,
     }
     ClientPool.create(sharedRedisConnection)
+    SocketPool.create()
     await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
     await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
   } catch (err) {
