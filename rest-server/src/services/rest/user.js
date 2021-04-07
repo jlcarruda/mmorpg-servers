@@ -6,7 +6,7 @@ module.exports = (app) => {
 
   app.get('/users/:userId', isAuthenticated, async (req, res, next) => {
     try {
-      res.status(200).json({
+      return res.status(200).json({
         data: res.locals.auth
       })
     } catch(err) {

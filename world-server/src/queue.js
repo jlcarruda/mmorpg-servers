@@ -23,6 +23,8 @@ class WorldQueues {
         console.log(`A queue error happened: ${err.message}`);
       });
 
+      const qp = new Queue(name, { ...sharedConfig, ...config  })
+
       qp.process(processHandle)
 
       WorldQueues.queues[name] = { queue: q, processor: qp }
