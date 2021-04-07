@@ -6,21 +6,18 @@ const package = require('./package.json')
 const env = args.env || "local"
 
 const config = {
-  game: {
-    starting_zone: "rm_start",
-    maps
+  encryption: {
+    jwt: {
+      secret: process.env.JWT_SECRET,
+      // expiresIn: process.env.JWT_EXPIRATION
+    }
   },
   server: {
-    host: process.env.SERVER_HOST,
-    port: process.env.SERVER_PORT,
-    env,
-    socket: {
-      corsOrigin: process.env.CORS_ORIGIN
-    },
-    version: package.version,
+    host: process.env.HOST,
+    port: process.env.PORT,
   },
   database: {
-    uri: process.env.DATABASE_URI,
+    uri: process.env.DATABASE_URI
   }
 }
 
