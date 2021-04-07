@@ -6,7 +6,7 @@ const ClientPool = require('./network/client-pool')
 class ClientFactory {
   static create(socket) {
     const client = {
-      socket: socket,
+      socket: socket.id,
       character: null,
       user: null,
       charState: {},

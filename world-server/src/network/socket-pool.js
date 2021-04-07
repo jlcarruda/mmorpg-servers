@@ -59,5 +59,4 @@ function destroySocket(socket, retries = 0) {
   }
 }
 
-
 module.exports = SocketPool

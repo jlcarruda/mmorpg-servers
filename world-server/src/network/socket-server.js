@@ -1,28 +1,33 @@
 const ClientFactory = require('../client-factory')
 const net = require('net')
 const ClientPool = require('./client-pool')
+const SocketPool = require('./socket-pool')
+const { v4: uuidv4 } = require('uuid')
 
 let server;
 const startSocketServer = (packet) => new Promise((resolve) => {
-  const pool = ClientPool.getInstance()
+  const clientPool = ClientPool.getInstance()
+  const socketPool = SocketPool.getInstance()
   if (!server) {
     console.log('[GAMEWORLD] Creating socket server ...')
     server = net.createServer(async (socket) => {
-      console.log('[GAMEWORLD] Socket connected')
+      socket.id = uuidv4()
 
       const client = ClientFactory.create(socket)
-      await pool.add(client)
 
       socket.on("error", (err) => {
         console.log("Client error", err)
-        pool.remove(client.id)
+        clientPool.remove(client.id)
       })
 
       socket.on("end", () => {
-        pool.remove(client.id)
+        clientPool.remove(client.id)
       })
 
       socket.on("data", (data) => packet.parse(data))
+
+      await clientPool.add(client)
+      socketPool.add(socket)
     })
   }
 
