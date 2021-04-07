@@ -24,4 +24,7 @@ module.exports = {
     .string('command', stringOptions)
     .int32le('x', stringOptions)
     .int32le('y', stringOptions),
+  char_update: new Parser().skip(1)
+    .string('command', stringOptions)
+    .string('state', stringOptions)
 }

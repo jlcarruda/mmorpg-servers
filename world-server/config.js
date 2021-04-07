@@ -21,5 +21,9 @@ module.exports = {
   },
   database: {
     uri: process.env.DATABASE_URI
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
   }
 }

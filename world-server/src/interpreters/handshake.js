@@ -1,9 +1,8 @@
 const now = require('performance-now')
-const { verify } = require('../common/jwt')
 const Parser = require('../network/packet_parser')
 const { users } = require('../connectors/rest_connector')
 
-module.exports = async (client, { build }, datapacket) => {
+module.exports = async (client, datapacket, { build }) => {
   const data = Parser.handshake.parse(datapacket)
 
   const { token, id } = data
@@ -14,18 +13,16 @@ module.exports = async (client, { build }, datapacket) => {
     if (status !== 200) {
       console.error(`[GAMEWORLD] Error while getting user from Rest Server. Server responded with ${status || 'no'} status`)
       console.log(responseData)
-      client.socket.write(packet.build(["HANDSHAKE_FAIL"]))
+      client.socket.write(build(["HANDSHAKE_FAIL"]))
       return destroySocket(client)
     }
 
     client.user = responseData.data
-    client.socket.write(build(['AUTHORIZED', now().toString()]))
-    // const user = await User.findById(id).select('-password').populate('characters').lean()
-    // if (!user || user.username !== username) {
-    //   console.error('[HANDSHAKE] User not found. Closing socket connection')
-    //   return destroySocket(client)
-    // }
+    client.token = token
 
+
+
+    client.socket.write(build(['AUTHORIZED', now().toString()]))
   } catch (error) {
     throw error
   }
