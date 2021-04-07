@@ -1,29 +1,17 @@
 const Queue = require('bee-queue')
-const redis = require('redis')
-
-const config = require('../config')
-
-const { redis: {host, port} } = config
-
-const sharedConfig = {
-  redis: redis.createClient({
-    host,
-    port
-  })
-}
 
 class WorldQueues {
   static queues = {};
 
   static async createQueue(name, processHandle, config) {
     if (!WorldQueues.queues[name]) {
-      const q = new Queue(name, { ...sharedConfig, ...config, isWorker: false })
+      const q = new Queue(name, {...config, isWorker: false })
 
       q.on('error', (err) => {
         console.log(`A queue error happened: ${err.message}`);
       });
 
-      const qp = new Queue(name, { ...sharedConfig, ...config  })
+      const qp = new Queue(name, config)
 
       qp.process(processHandle)
 
