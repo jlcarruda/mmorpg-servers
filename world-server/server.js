@@ -3,18 +3,30 @@ const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
 const WorldQueues = require('./src/queue')
 const { posUpdateHandle, charUpdateHandle } = require('./src/queue-handles')
+const redis = require('redis')
 
-const { server, database } = config
+const { server, database, redis: {host: redisHost, port: redisPort} } = config
+
+const redisClient = redis.createClient({
+  host: redisHost,
+  port: redisPort
+})
+
+const sharedRedisConfig = {
+  redis: redisClient
+}
 
 console.log('[GAMEWORLD] Initializing server ...')
 module.exports = (async () => {
 
   try {
-    await databaseInitializer(database)
 
-    await serverInitializer(server)
+    await databaseInitializer(database)
+    await serverInitializer(server, redisClient)
+
     // Create queues
     const config = {
+      ...sharedRedisConfig,
       removeOnSuccess: true,
       removeOnFailure: true,
     }

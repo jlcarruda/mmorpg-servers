@@ -1,53 +1,131 @@
-const Client = require('../client')
+const { promisify } = require('util')
+const redis = require('redis')
+const config = require('../../config')
 
+const { redis: { host, port } } = config
+
+let _getAsync
+let _setAsync
+let _delAsync
 // TODO: Maybe, add a map for client ids, so it will cost less to loop throug it
 class ClientPool {
   static instance;
 
   static getInstance() {
     if (!ClientPool.instance) {
-      ClientPool.create()
+      console.log("Client Pool - instance not defined. Creating redis client")
+      ClientPool.create(redis.createClient({
+        host,
+        port
+      }))
     }
-
     return ClientPool.instance;
   }
 
-  static create() {
+  static create(redisClient) {
     if (!ClientPool.instance) {
-      const instance = new ClientPool()
-      instance.pool = []
-      ClientPool.instance = instance
+      ClientPool.instance = new ClientPool()
+      _getAsync = promisify(redisClient.get).bind(redisClient)
+      _setAsync = promisify(redisClient.set).bind(redisClient)
+      _delAsync = promisify(redisClient.del).bind(redisClient)
+      //TODO: Maybe limit the size of the memory pool?
+      ClientPool.instance.pool = [] // RAM memory pool of clients for instant access
     }
 
     return ClientPool.instance
   }
 
-  findById(id) {
-    const client = this.pool.filter(c => c.id === id)[0]
-    return client;
+  poolGet(id) {
+    return this.pool.find(c => c.id === id)
   }
 
-  remove(id) {
-    let index = null;
-    this.pool.every((c, i) => {
-      if (c.id === id) {
-        index = i
-        return false
-      }
+  poolIndex(id) {
+    return this.pool.findIndex(c => c.id === id)
+  }
 
-      return true
-    })
-
-    if (index !== null) {
-      console.info(`[GAMEWORLD] Removing client ${id} from pool`)
-      this.pool.slice(index, 1)
-    } else {
-      console.info(`[GAMEWORLD] Client with ${id} id does not exist in pool`)
+  poolAdd(client) {
+    if (this.poolIndex(client.id) === -1) {
+      this.pool.push(client)
     }
   }
 
-  add(client) {
-    this.pool.push(client)
+  poolRemove(id) {
+    const index = this.poolIndex(id)
+
+    if (index >= 0) {
+      this.pool.splice(index, 1)
+    }
+  }
+
+  poolUpdate(client) {
+    const index = this.poolIndex(client.id)
+    if (index >= 0) {
+      this.pool[index] = client
+    }
+  }
+
+  async findById(id) {
+    try {
+      // Check if pool already has the client
+      let client = this.poolGet(id)
+      if (client) {
+        return client;
+      }
+
+      client = await _getAsync(id)
+      if (client) {
+        this.poolAdd(client)
+        return JSON.parse(client);
+      }
+      return false
+    } catch (err) {
+      console.error('[GAMEWORLD] Error while retrieving client by id', err)
+    }
+
+    return false
+  }
+
+  async remove(id) {
+    try {
+      this.poolRemove(id)
+      await _delAsync(id)
+      return true
+    } catch (err) {
+      console.error('[GAMEWORLD] Error while deleting client by id', err)
+    }
+    return false
+  }
+
+  async update(client) {
+    try {
+      const c = await _getAsync(client.id)
+      if (c) {
+        this.poolUpdate(client)
+        //TODO: Check performance of this block
+        const today = new Date()
+        const lastUpdate = new Date(c.lastUpdatedAt)
+        const diffTime = Math.abs(today - lastUpdate)
+        if (Math.ceil(diffTime / (1000 * 60) >= 5)) { // 5 minutes
+          await _setAsync(client.id, JSON.stringify(client))
+        }
+        return true
+      }
+    } catch(err) {
+      console.error('[GAMEWORLD] Error while updating client to the pool', err)
+    }
+
+    return false
+  }
+
+  async add(client) {
+    try {
+      this.poolAdd(client)
+      await _setAsync(client.id, JSON.stringify(client))
+      return true
+    } catch (error) {
+      console.error('[GAMEWORLD] Error while adding client to the pool', err)
+    }
+    return false
   }
 
 }

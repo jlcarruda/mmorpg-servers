@@ -1,25 +1,35 @@
-const Client = require('../client')
+const ClientFactory = require('../client-factory')
 const net = require('net')
 const ClientPool = require('./client-pool')
+const SocketPool = require('./socket-pool')
+const { v4: uuidv4 } = require('uuid')
+const short = require('short-uuid')
 
 let server;
-const startSocketServer = () => new Promise((resolve) => {
-  const pool = ClientPool.getInstance()
+const startSocketServer = (packet, redisClient) => new Promise((resolve) => {
+  const clientPool = ClientPool.create(redisClient)
+  const socketPool = SocketPool.create()
   if (!server) {
     console.log('[GAMEWORLD] Creating socket server ...')
-    server = net.createServer((socket) => {
-      console.log('[GAMEWORLD] Socket connected')
+    server = net.createServer(async (socket) => {
+      socket.id = uuidv4()
 
-      const client = new Client(socket)
-      client.initialize()
+      const client = ClientFactory.create(socket)
 
-      socket.on("error", client.onError())
+      socket.on("error", (err) => {
+        console.log("Client error", err)
+        clientPool.remove(client.id)
+      })
 
-      socket.on("end", client.onEnd())
+      socket.on("end", () => {
+        clientPool.remove(client.id)
+      })
 
-      socket.on("data", client.onData())
+      socket.on("data", (data) => packet.parse(data))
 
-      pool.add(client)
+      await clientPool.add(client)
+      socketPool.add(socket)
+      socket.write(packet.build(["REQUEST_HANDSHAKE", short().fromUUID(client.id)]))
     })
   }
 
