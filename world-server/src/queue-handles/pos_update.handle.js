@@ -3,8 +3,10 @@ const config = require('../../config')
 const now = require('performance-now')
 const packet = require('../network/packet')
 const SocketPool = require('../network/socket-pool')
+const ClientPool = require('../network/client-pool')
 
 const socketPool = SocketPool.getInstance()
+const clientPool = ClientPool.getInstance()
 
 module.exports = async (job) => {
   switch(job.data.command) {
@@ -27,6 +29,7 @@ async function pos_update({ client, packet: packetReceived }, isRunning) {
 
       client.character.position.x = x
       client.character.position.y = y
+      await clientPool.update(client)
       socket.write(packet.build(['POS_OK', x, y, now().toString()]))
     } catch(err) {
       console.log("ERROR WHILE SAVING POSITION", err)

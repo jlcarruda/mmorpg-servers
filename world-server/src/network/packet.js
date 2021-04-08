@@ -30,8 +30,8 @@ const interpret = async (datapacket) => {
 
     console.log(`[PACKET] Interpret: ${command}`)
     // If command is implemented
-    if (interpreters[command.toUpperCase()]) {
-      interpreters[command.toUpperCase()](client, socket, datapacket)
+    if (interpreters[command]) {
+      interpreters[command](client, socket, datapacket)
     }
   } catch (err) {
     console.error(`[GAMEWORLD] Error while interpreting packet`, err)
@@ -75,6 +75,7 @@ module.exports = {
   // Parse packet to be handled by client
   parse: (data) => {
     let index = 0;
+    console.log(data.toString())
     console.log(`[PACKET] Received packet of size ${data.length}`)
     while(index < data.length) {
       const packetSize = data.readUInt8(index)

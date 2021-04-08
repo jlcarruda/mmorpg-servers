@@ -11,6 +11,7 @@ class ClientFactory {
       user: null,
       charState: {},
       lastCharStateUpdate: null,
+      lastUpdatedAt: Date.now().toString(),
       id: uuidv4(),
     }
 

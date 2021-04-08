@@ -16,5 +16,5 @@ module.exports = async (client, socket, datapacket) => {
     stamina: state.attributes.stamina,
   }
 
-  console.log("Saved state of character")
+  ClientPool.getInstance().update(client)
 }

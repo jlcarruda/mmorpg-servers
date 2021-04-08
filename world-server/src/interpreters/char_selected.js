@@ -20,16 +20,19 @@ module.exports = async (client, socket, datapacket) => {
       }
     })
 
+    const clientPool = ClientPool.getInstance()
+
     if (status !== 200 || !userHasChar) {
       console.error('[CHAR SELECTED] Clients user does not have acces to this character. Closing socket connection')
       socket.write(build(['CHAR_SELECTED', 'FALSE', now().toString()]))
-      ClientPool.getInstance().remove(client)
+      clientPool.remove(client)
       return SocketPool.getInstance().destroy(socket)
     }
 
     const character = await Character.findById(char_id).lean()
 
     client.character = character
+    await clientPool.update(client)
     console.log("Character selected", character)
     socket.write(build(['CHAR_SELECTED', 'TRUE', now().toString()]))
   } catch (error) {
