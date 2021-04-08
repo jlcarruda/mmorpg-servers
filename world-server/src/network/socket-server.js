@@ -3,11 +3,12 @@ const net = require('net')
 const ClientPool = require('./client-pool')
 const SocketPool = require('./socket-pool')
 const { v4: uuidv4 } = require('uuid')
+const short = require('short-uuid')
 
 let server;
-const startSocketServer = (packet) => new Promise((resolve) => {
-  const clientPool = ClientPool.getInstance()
-  const socketPool = SocketPool.getInstance()
+const startSocketServer = (packet, redisClient) => new Promise((resolve) => {
+  const clientPool = ClientPool.create(redisClient)
+  const socketPool = SocketPool.create()
   if (!server) {
     console.log('[GAMEWORLD] Creating socket server ...')
     server = net.createServer(async (socket) => {
@@ -28,6 +29,7 @@ const startSocketServer = (packet) => new Promise((resolve) => {
 
       await clientPool.add(client)
       socketPool.add(socket)
+      socket.write(packet.build(["REQUEST_HANDSHAKE", short().fromUUID(client.id)]))
     })
   }
 

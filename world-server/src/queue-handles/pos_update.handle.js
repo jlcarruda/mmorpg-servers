@@ -2,9 +2,9 @@ const { Character } = require('../models')
 const config = require('../../config')
 const now = require('performance-now')
 const packet = require('../network/packet')
-const ClientPool = require('../network/client-pool')
+const SocketPool = require('../network/socket-pool')
 
-const pool = ClientPool.getInstance()
+const socketPool = SocketPool.getInstance()
 
 module.exports = async (job) => {
   switch(job.data.command) {
@@ -15,22 +15,22 @@ module.exports = async (job) => {
   }
 }
 
-async function pos_update({ client, command, packet: packetReceived }, isRunning) {
-  const clientObj = pool.findById(client.id)
-  const { x: charX, y: charY } = clientObj.character.position
+async function pos_update({ client, packet: packetReceived }, isRunning) {
+  const socket = SocketPool.getInstance().get(client.socket)
+  const { x: charX, y: charY } = client.character.position
   const { x, y } = packetReceived
-  const notValid = validateMovement(clientObj.character.position, x, y, isRunning)
+  const notValid = validateMovement(client.character.position, x, y, isRunning)
   if (notValid) {
-    clientObj.socket.write(packet.build(['POS_DESYNC', charX, charY, now().toString()]))
+    socket.write(packet.build(['POS_DESYNC', charX, charY, now().toString()]))
   } else {
     try  {
 
-      clientObj.character.position.x = x
-      clientObj.character.position.y = y
-      clientObj.socket.write(packet.build(['POS_OK', x, y, now().toString()]))
+      client.character.position.x = x
+      client.character.position.y = y
+      socket.write(packet.build(['POS_OK', x, y, now().toString()]))
     } catch(err) {
       console.log("ERROR WHILE SAVING POSITION", err)
-      clientObj.socket.write(packet.build(['POS_DESYNC', charX, charY, now().toString()]))
+      socket.write(packet.build(['POS_DESYNC', charX, charY, now().toString()]))
     }
   }
 }

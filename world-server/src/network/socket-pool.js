@@ -3,7 +3,7 @@ class SocketPool {
 
   static create() {
     if (!SocketPool.instance) {
-      SocketPool.instance = SocketPool.instance
+      SocketPool.instance = new SocketPool()
       SocketPool.instance.pool = []
     }
 
@@ -11,14 +11,14 @@ class SocketPool {
   }
 
   static getInstance() {
-    return SocketPool.instance
+    return SocketPool.instance || SocketPool.create()
   }
 
-  getSocket(id) {
+  get(id) {
     return this.pool.filter(s => s.id === id)[0]
   }
 
-  addSocket(socket) {
+  add(socket) {
     this.pool.push(socket)
   }
 

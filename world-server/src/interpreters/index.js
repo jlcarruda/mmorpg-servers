@@ -7,6 +7,6 @@ module.exports = {
   HANDSHAKE,
   CHAR_SELECTED,
   POS_UPDATE,
-  POS_UPDATE_RUN: (client, datapacket) => POS_UPDATE(client, datapacket, true),
+  POS_UPDATE_RUN: (client, socket, datapacket) => POS_UPDATE(client, socket, datapacket, true),
   CHAR_UPDATE,
 }

@@ -1,23 +1,34 @@
 const { promisify } = require('util')
+const redis = require('redis')
+const config = require('../../config')
+
+const { redis: { host, port } } = config
 
 let _getAsync
 let _setAsync
 let _delAsync
 // TODO: Maybe, add a map for client ids, so it will cost less to loop throug it
 class ClientPool {
-  static instance = undefined;
+  static instance;
 
+  // TODO: verify why instance does not exist even when created before
   static getInstance() {
+    if (!ClientPool.instance) {
+      console.log("Client Pool - instance not defined. Creating redis client")
+      ClientPool.create(redis.createClient({
+        host,
+        port
+      }))
+    }
     return ClientPool.instance;
   }
 
   static create(redisClient) {
     if (!ClientPool.instance) {
-      const instance = new ClientPool()
+      ClientPool.instance = new ClientPool()
       _getAsync = promisify(redisClient.get).bind(redisClient)
       _setAsync = promisify(redisClient.set).bind(redisClient)
       _delAsync = promisify(redisClient.del).bind(redisClient)
-      ClientPool.instance = instance
     }
 
     return ClientPool.instance

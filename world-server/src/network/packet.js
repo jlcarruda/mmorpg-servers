@@ -1,8 +1,11 @@
 const Parser = require('./packet-parser')
 const interpreters = require('../interpreters')
 const ClientPool = require('./client-pool')
+const SocketPool = require('./socket-pool')
+const short = require('short-uuid')
 
-const pool = ClientPool.getInstance()
+const clientPool = ClientPool.getInstance()
+const socketPool = SocketPool.getInstance()
 
 /**
  *  Socket packets on GMS is handled in this way: A long buffer with all packets (chunks) glued
@@ -16,20 +19,23 @@ const pool = ClientPool.getInstance()
 
 const zeroBuffer = Buffer.from('00', 'hex')
 
-const interpret = (datapacket, packet) => {
-  let { command, client_id } = Parser.header.parse(datapacket)
-  const client = pool.findById(client_id)
+const interpret = async (datapacket) => {
+  try {
+    let { command, client_id } = Parser.header.parse(datapacket)
+    const client = await clientPool.findById(short().toUUID(client_id))
+    const socket = socketPool.get(client.socket)
+    if (!client) {
+      console.error('[PACKET] Client could not be located. Disconnection packet sent')
+    }
 
-  if (!client) {
-    console.error('[PACKET] Client could not be located. Disconnection packet sent')
-
-  }
-
-  console.log(`[PACKET] Interpret: ${command}`)
-
-  // If command is implemented
-  if (interpreters[command.toUpperCase()]) {
-    interpreters[command.toUpperCase()](client, datapacket, packet)
+    console.log(`[PACKET] Interpret: ${command}`)
+    // If command is implemented
+    if (interpreters[command.toUpperCase()]) {
+      interpreters[command.toUpperCase()](client, socket, datapacket)
+    }
+  } catch (err) {
+    console.error(`[GAMEWORLD] Error while interpreting packet`, err)
+    throw err
   }
 }
 
@@ -69,12 +75,12 @@ module.exports = {
   // Parse packet to be handled by client
   parse: (data) => {
     let index = 0;
-
+    console.log(`[PACKET] Received packet of size ${data.length}`)
     while(index < data.length) {
       const packetSize = data.readUInt8(index)
       const extracted = Buffer.alloc(packetSize)
       data.copy(extracted, 0, index, index + packetSize)
-      interpret(extracted, packet)
+      interpret(extracted)
       index += packetSize
     }
   },
