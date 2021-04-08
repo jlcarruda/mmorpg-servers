@@ -75,7 +75,6 @@ module.exports = {
   // Parse packet to be handled by client
   parse: (data) => {
     let index = 0;
-    console.log(data.toString())
     console.log(`[PACKET] Received packet of size ${data.length}`)
     while(index < data.length) {
       const packetSize = data.readUInt8(index)

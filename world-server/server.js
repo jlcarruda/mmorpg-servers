@@ -2,8 +2,6 @@ const config = require('./config')
 const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
 const WorldQueues = require('./src/queue')
-const ClientPool = require('./src/network/client-pool')
-const SocketPool = require('./src/network/socket-pool')
 const { posUpdateHandle, charUpdateHandle } = require('./src/queue-handles')
 const redis = require('redis')
 
@@ -22,10 +20,6 @@ console.log('[GAMEWORLD] Initializing server ...')
 module.exports = (async () => {
 
   try {
-    // Create pools first
-    // TODO: not working. Need further investigation
-    // ClientPool.create(redisClient)
-    // SocketPool.create()
 
     await databaseInitializer(database)
     await serverInitializer(server, redisClient)

@@ -18,7 +18,7 @@ module.exports = async (job) => {
 }
 
 async function pos_update({ client, packet: packetReceived }, isRunning) {
-  const socket = SocketPool.getInstance().get(client.socket)
+  const socket = socketPool.get(client.socket)
   const { x: charX, y: charY } = client.character.position
   const { x, y } = packetReceived
   const notValid = validateMovement(client.character.position, x, y, isRunning)
