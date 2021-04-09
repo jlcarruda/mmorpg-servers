@@ -5,12 +5,13 @@ const WorldQueues = require('./src/queue')
 const { posUpdateHandle, charPersistHandle } = require('./src/queue-handles')
 const redis = require('redis')
 
-const { server, database, redis: {host: redisHost, port: redisPort} } = config
+const { server, database, redis: {url, host: redisHost, port: redisPort} } = config
 
-const redisClient = redis.createClient({
+const clientConfig = url || {
   host: redisHost,
   port: redisPort
-})
+}
+const redisClient = redis.createClient(clientConfig)
 
 const sharedRedisConfig = {
   redis: redisClient
