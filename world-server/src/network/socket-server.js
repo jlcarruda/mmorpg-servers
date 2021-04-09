@@ -7,8 +7,8 @@ const short = require('short-uuid')
 const WorldQueues = require('../queue')
 
 let server;
-const startSocketServer = (packet, redisClient) => new Promise((resolve) => {
-  const clientPool = ClientPool.create(redisClient)
+const startSocketServer = (packet, redisClient) => new Promise(async (resolve) => {
+  const clientPool = await ClientPool.create(redisClient)
   const socketPool = SocketPool.create()
   if (!server) {
     console.log('[GAMEWORLD] Creating socket server ...')

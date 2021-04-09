@@ -4,7 +4,6 @@ const ClientPool = require('./client-pool')
 const SocketPool = require('./socket-pool')
 const short = require('short-uuid')
 
-const clientPool = ClientPool.create()
 const socketPool = SocketPool.create()
 
 /**
@@ -21,6 +20,7 @@ const zeroBuffer = Buffer.from('00', 'hex')
 
 const interpret = async (datapacket) => {
   try {
+    const clientPool = await ClientPool.create()
     let { command, client_id } = Parser.header.parse(datapacket)
     const client = await clientPool.findById(short().toUUID(client_id))
     const socket = socketPool.get(client.socket)

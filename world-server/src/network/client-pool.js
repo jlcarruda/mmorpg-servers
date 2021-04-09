@@ -9,34 +9,34 @@ let _getAsync
 let _setAsync
 let _delAsync
 // TODO: Maybe, add a map for client ids, so it will cost less to loop throug it
+let _instance
 class ClientPool {
-  static instance;
 
   static getInstance() {
-    if (!ClientPool.instance) {
+    if (!_instance) {
       const errMessage = "Client Pool - instance not defined. Please create an instance before using"
       console.error(errMessage)
       // ClientPool.create(await redisClient())
       throw new Error(errMessage)
     } else {
-      return ClientPool.instance;
+      return _instance;
     }
   }
 
   static async create(redisClient) {
-    if (!ClientPool.instance) {
+    if (!_instance) {
       if (!redisClient) {
         redisClient = await createRedisClient()
       }
-      ClientPool.instance = new ClientPool()
+      _instance = new ClientPool()
       _getAsync = promisify(redisClient.get).bind(redisClient)
       _setAsync = promisify(redisClient.set).bind(redisClient)
       _delAsync = promisify(redisClient.del).bind(redisClient)
       //TODO: Maybe limit the size of the memory pool?
-      ClientPool.instance.pool = [] // RAM memory pool of clients for instant access
+      _instance.pool = [] // RAM memory pool of clients for instant access
     }
 
-    return ClientPool.instance
+    return _instance
   }
 
   poolGet(id) {
