@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./server.js",
     "debug": "nodemon --inspect ./server.js",
-    "local": "nodemon ./server.js"
+    "local": "nodemon ./server.js",
+    "inspect": "node --inspect ./server.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "binary-parser": "^1.7.0",
     "common-errors": "^1.2.0",
     "dotenv": "^8.2.0",
+    "ioredis": "^4.26.0",
     "jsonwebtoken": "^8.5.1",
     "minimist": "^1.2.5",
     "mongoose": "^5.12.3",

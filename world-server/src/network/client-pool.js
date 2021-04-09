@@ -1,6 +1,7 @@
 const { promisify } = require('util')
 const redis = require('redis')
 const config = require('../../config')
+const createRedisClient = require('../redis')
 
 const { redis: { host, port } } = config
 
@@ -13,17 +14,20 @@ class ClientPool {
 
   static getInstance() {
     if (!ClientPool.instance) {
-      console.log("Client Pool - instance not defined. Creating redis client")
-      ClientPool.create(redis.createClient({
-        host,
-        port
-      }))
+      const errMessage = "Client Pool - instance not defined. Please create an instance before using"
+      console.error(errMessage)
+      // ClientPool.create(await redisClient())
+      throw new Error(errMessage)
+    } else {
+      return ClientPool.instance;
     }
-    return ClientPool.instance;
   }
 
-  static create(redisClient) {
+  static async create(redisClient) {
     if (!ClientPool.instance) {
+      if (!redisClient) {
+        redisClient = await createRedisClient()
+      }
       ClientPool.instance = new ClientPool()
       _getAsync = promisify(redisClient.get).bind(redisClient)
       _setAsync = promisify(redisClient.set).bind(redisClient)

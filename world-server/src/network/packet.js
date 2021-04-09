@@ -4,8 +4,8 @@ const ClientPool = require('./client-pool')
 const SocketPool = require('./socket-pool')
 const short = require('short-uuid')
 
-const clientPool = ClientPool.getInstance()
-const socketPool = SocketPool.getInstance()
+const clientPool = ClientPool.create()
+const socketPool = SocketPool.create()
 
 /**
  *  Socket packets on GMS is handled in this way: A long buffer with all packets (chunks) glued

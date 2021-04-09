@@ -33,7 +33,7 @@ class WorldQueues {
   }
 
   static async createJob(queueName, data) {
-    const q = WorldQueues.queues[queueName].queue
+    const q = WorldQueues.queues[queueName] && WorldQueues.queues[queueName].queue
     try {
       if (q) {
         const job = await q.createJob({ ...data, queue: q }).save()

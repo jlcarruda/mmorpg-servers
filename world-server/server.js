@@ -1,26 +1,24 @@
 const config = require('./config')
 const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
+const createRedisClient = require('./src/redis')
 const WorldQueues = require('./src/queue')
-const { posUpdateHandle, charPersistHandle } = require('./src/queue-handles')
-const redis = require('redis')
+// const { posUpdateHandle, charPersistHandle } = require('./src/queue-handles')
+// const redis = require('redis')
+const Redis = require('ioredis')
 
-const { server, database, redis: {url, host: redisHost, port: redisPort} } = config
-
-const clientConfig = url || {
-  host: redisHost,
-  port: redisPort
-}
-const redisClient = redis.createClient(clientConfig)
-
-const sharedRedisConfig = {
-  redis: redisClient
-}
-
+const { server, database } = config
+console.log("Configs Initialized", JSON.stringify(config))
 console.log('[GAMEWORLD] Initializing server ...')
 module.exports = (async () => {
 
   try {
+    // const redisClient =  new Redis(redisPort, redisHost, { password }) //redis.createClient(clientConfig)
+    const redisClient = await createRedisClient()
+
+    const sharedRedisConfig = {
+      redis: redisClient
+    }
 
     await databaseInitializer(database)
     // Create queues
@@ -29,9 +27,9 @@ module.exports = (async () => {
       removeOnSuccess: true,
       removeOnFailure: true,
     }
-    await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
+    // await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
     // await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
-    await WorldQueues.createQueue("CHAR_PERSIST_Q", charPersistHandle, config)
+    // await WorldQueues.createQueue("CHAR_PERSIST_Q", charPersistHandle, config)
 
     await serverInitializer(server, redisClient)
 
