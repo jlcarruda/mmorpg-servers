@@ -2,7 +2,7 @@ const config = require('./config')
 const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
 const WorldQueues = require('./src/queue')
-const { posUpdateHandle, charUpdateHandle } = require('./src/queue-handles')
+const { posUpdateHandle, charPersistHandle } = require('./src/queue-handles')
 const redis = require('redis')
 
 const { server, database, redis: {host: redisHost, port: redisPort} } = config
@@ -22,8 +22,6 @@ module.exports = (async () => {
   try {
 
     await databaseInitializer(database)
-    await serverInitializer(server, redisClient)
-
     // Create queues
     const config = {
       ...sharedRedisConfig,
@@ -31,7 +29,11 @@ module.exports = (async () => {
       removeOnFailure: true,
     }
     await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
-    await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
+    // await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
+    await WorldQueues.createQueue("CHAR_PERSIST_Q", charPersistHandle, config)
+
+    await serverInitializer(server, redisClient)
+
   } catch (err) {
     console.error("Error while trying to initialize server", err)
     throw err

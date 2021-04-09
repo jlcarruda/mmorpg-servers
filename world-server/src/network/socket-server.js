@@ -4,6 +4,7 @@ const ClientPool = require('./client-pool')
 const SocketPool = require('./socket-pool')
 const { v4: uuidv4 } = require('uuid')
 const short = require('short-uuid')
+const WorldQueues = require('../queue')
 
 let server;
 const startSocketServer = (packet, redisClient) => new Promise((resolve) => {
@@ -16,13 +17,13 @@ const startSocketServer = (packet, redisClient) => new Promise((resolve) => {
 
       const client = ClientFactory.create(socket)
 
-      socket.on("error", (err) => {
+      socket.on("error", async (err) => {
         console.log("Client error", err)
-        clientPool.remove(client.id)
+        await WorldQueues.createJob("CHAR_PERSIST_Q", { client_id: client.id })
       })
 
-      socket.on("end", () => {
-        clientPool.remove(client.id)
+      socket.on("end", async () => {
+        await WorldQueues.createJob("CHAR_PERSIST_Q", { client_id: client.id })
       })
 
       socket.on("data", (data) => packet.parse(data))
