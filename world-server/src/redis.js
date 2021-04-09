@@ -19,9 +19,9 @@ module.exports = async (newClient = false) => {
 
   try {
     const redisClient =  new Redis(url, {
-      tls: {
-        rejectUnauthorized: false
-      },
+      // tls: {
+      //   rejectUnauthorized: false
+      // },
       lazyConnect: true
     }) //redis.createClient(clientConfig)
     await redisClient.connect()
