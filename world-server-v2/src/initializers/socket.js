@@ -5,11 +5,13 @@ const short = require('short-uuid')
 const Queues = require('../libs/queues')
 const { messages } = require('../libs/network/protocol')
 const Packet = require('../libs/network/packet')
+const { Pool: ClientPool } = require('../libs/client')
 
 let _server;
 const start = ({ port, host }, packet = Packet, poolStorageClient = getClient()) => new Promise(async (resolve, reject) => {
   if (!_server) {
-    //TODO: create client pool
+
+    const clientPool = ClientPool.getInstance()
     //TODO: create socket pool
     server = net.createServer(async (socket) => {
       socket.id = uuidv4()
@@ -28,6 +30,7 @@ const start = ({ port, host }, packet = Packet, poolStorageClient = getClient())
       socket.on("data", async(data) => packet.parse(data)) //NOTE: packet parser
 
       //TODO: add the client to pool
+      // await clientPool.add(client)
       //TODO: add the socket to pool
       //TODO: write on socket the packet builted with REQUEST_HANDSHAKE
       socket.write(packet.build([messages.REQUEST_HANDSHAKE, short().fromUUID(client.id)]))
