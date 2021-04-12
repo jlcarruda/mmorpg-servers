@@ -26,7 +26,7 @@ const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, r
         await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: client.id}) //NOTE: client_id
       })
 
-      socket.on("data", (data) => packet.parse(data)) //NOTE: packet parser
+      socket.on("data", (data) => packet.parse(data))
 
       clientPool.add(client)
       //TODO: add the socket to pool
