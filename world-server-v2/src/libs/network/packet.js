@@ -1,17 +1,25 @@
 const { parser } = require('./protocol')
 const { Pool: ClientPool } = require('../client')
+const SocketPool = require('./pool')
 
 const zeroBuffer = Buffer.from('00', 'hex')
 
 const interpret = async (datapacket) => {
   try {
     const clientPool = await ClientPool.create()
+    const socketPool = await SocketPool.getInstance()
     let { command, client_id } = parser.header.parse(datapacket)
     const client = await clientPool.findById(short().toUUID(client_id))
-    // const socket = socketPool.get(client.socket)
-    // if (!client) {
-    //   console.error('[PACKET] Client could not be located. Disconnection packet sent')
-    // }
+    if (!client) {
+      console.error('[PACKET] Client could not be located. Disconnection packet sent')
+    }
+
+    const socket = socketPool.get(client.socket)
+
+    if (!socket) {
+      console.error('[PACKET] Client with no socket associated. Terminating client')
+      return
+    }
 
     console.log(`[PACKET] Interpret: ${command}`)
     // If command is implemented

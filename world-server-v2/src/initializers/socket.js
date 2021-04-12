@@ -2,16 +2,15 @@ const net = require('net')
 const { v4: uuidv4 } = require('uuid')
 const short = require('short-uuid')
 const Queues = require('../libs/queues')
-const { messages } = require('../libs/network/protocol')
-const Packet = require('../libs/network/packet')
+const { protocol: { messages }, packet: Packet, Pool: SocketPool } = require('../libs/network')
 const { Pool: ClientPool, Factory: ClientFactory } = require('../libs/client')
 
 let _server;
 const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, reject) => {
   if (!_server) {
 
-    const clientPool = ClientPool.getInstance()
-    //TODO: create socket pool
+    const clientPool = await ClientPool.getInstance()
+    const socketPool = SocketPool.create()
     server = net.createServer(async (socket) => {
       socket.id = uuidv4()
 
@@ -29,7 +28,7 @@ const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, r
       socket.on("data", (data) => packet.parse(data))
 
       clientPool.add(client)
-      //TODO: add the socket to pool
+      socketPool.add(socket)
       socket.write(packet.build([messages.REQUEST_HANDSHAKE, short().fromUUID(client.id)]))
     })
 

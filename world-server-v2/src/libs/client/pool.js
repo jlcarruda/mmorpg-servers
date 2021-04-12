@@ -12,13 +12,13 @@ class ClientPool {
   /**
    * Retrieve the already created instance of ClientPool.
    * If not created, it calls `.create()`
-   * @returns {ClientPool}
+   * @returns {Promise<ClientPool>}
    */
-  static getInstance() {
+  static async getInstance() {
     if (!_instance) {
       const errMessage = "[CLIENT POOL] - instance not defined. Please create an instance before using"
       console.error(errMessage)
-      ClientPool.create()
+      await ClientPool.create()
     } else {
       return _instance;
     }
@@ -32,7 +32,7 @@ class ClientPool {
    * If `storageClient` is not passed, it will use the default client
    * @param {} storageClient - an object that handles the storage of client objects
    */
-  static create(storageClient) {
+  static async create(storageClient) {
     if (!_instance) {
       if (!storageClient) {
         storageClient = await getClient()
