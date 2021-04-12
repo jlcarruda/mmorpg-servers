@@ -34,6 +34,12 @@ module.exports = {
     port: process.env.REDIS_PORT,
     username: process.env.REDIS_USERNAME,
     password: process.env.REDIS_PASSWORD,
-    url: process.env.REDIS_TLS_URL
+    url: process.env.REDIS_TLS_URL,
+    config: {
+      tls: {
+        rejectUnauthorized: false
+      },
+      lazyConnect: true
+    }
   }
 }

@@ -1,10 +1,10 @@
 const config = require('./config')
-const databaseInitializer = require('./src/libs/database')
+const database = require('./src/libs/database')
 
 const { server, database: dbConfigs } = config
 
 module.exports = (async () => {
-  await databaseInitializer(dbConfigs)
+  await database.connect(dbConfigs)
   // Create redis client
   // create queues
   // initialize socket server
