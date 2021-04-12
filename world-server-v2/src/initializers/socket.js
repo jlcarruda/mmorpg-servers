@@ -1,14 +1,13 @@
 const net = require('net')
-const { getClient } = require('../repositories/redis')
 const { v4: uuidv4 } = require('uuid')
 const short = require('short-uuid')
 const Queues = require('../libs/queues')
 const { messages } = require('../libs/network/protocol')
 const Packet = require('../libs/network/packet')
-const { Pool: ClientPool } = require('../libs/client')
+const { Pool: ClientPool, Factory: ClientFactory } = require('../libs/client')
 
 let _server;
-const start = ({ port, host }, packet = Packet, poolStorageClient = getClient()) => new Promise(async (resolve, reject) => {
+const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, reject) => {
   if (!_server) {
 
     const clientPool = ClientPool.getInstance()
@@ -16,23 +15,21 @@ const start = ({ port, host }, packet = Packet, poolStorageClient = getClient())
     server = net.createServer(async (socket) => {
       socket.id = uuidv4()
 
-      //TODO: create Client Factory
+      const client = ClientFactory.create(socket)
 
-      socket.on("error", async(err) => {
+      socket.on("error", async (err) => {
         console.log("[SOCKET] Error on socket connection", err)
-        Queues.getInstance().createJob('CHAR_PERSIST_Q', {}) //NOTE: client_id
+        await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: client.id}) //NOTE: client_id
       })
 
-      socket.on("end", async() => {
-        Queues.getInstance().createJob('CHAR_PERSIST_Q', {}) //NOTE: client_id
+      socket.on("end", async () => {
+        await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: client.id}) //NOTE: client_id
       })
 
-      socket.on("data", async(data) => packet.parse(data)) //NOTE: packet parser
+      socket.on("data", (data) => packet.parse(data)) //NOTE: packet parser
 
-      //TODO: add the client to pool
-      // await clientPool.add(client)
+      clientPool.add(client)
       //TODO: add the socket to pool
-      //TODO: write on socket the packet builted with REQUEST_HANDSHAKE
       socket.write(packet.build([messages.REQUEST_HANDSHAKE, short().fromUUID(client.id)]))
     })
 
