@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  world:
+    container_name: 'ignite-online-world'
+    env_file: ./world-server/.env.dev
+    ports:
+      - "3000:3000"
+    build:
+      context: ./world-server
+      dockerfile: ./Dockerfile
+  rest:
+    container_name: 'ignite-online-rest'
+    env_file: ./rest-server/.env.dev
+    ports:
+      - "3001:3001"
+    build:
+      context: ./rest-server
+      dockerfile: ./Dockerfile
+  auth:
+    container_name: 'ignite-online-auth'
+    env_file: ./auth-server/.env.dev
+    ports:
+      - "3002:3002"
+    build:
+      context: ./auth-server
+      dockerfile: ./Dockerfile
+  redis:
+    image: redis
+    container_name: ignite-online-queue
+    command: redis-server --requirepass Redis2019!
+    ports:
+      - "6379:6379"

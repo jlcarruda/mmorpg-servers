@@ -4,11 +4,12 @@ class WorldQueues {
   static queues = {};
 
   static async createQueue(name, processHandle, config) {
+    console.log(`[QUEUE] Creating Queue named ${name}...`)
     if (!WorldQueues.queues[name]) {
       const q = new Queue(name, {...config, isWorker: false })
 
       q.on('error', (err) => {
-        console.log(`A queue error happened: ${err.message}`);
+        console.log(`A queue error happened while creating queue ${name}: ${err.message}`);
       });
 
       const qp = new Queue(name, config)
@@ -33,7 +34,7 @@ class WorldQueues {
   }
 
   static async createJob(queueName, data) {
-    const q = WorldQueues.queues[queueName].queue
+    const q = WorldQueues.queues[queueName] && WorldQueues.queues[queueName].queue
     try {
       if (q) {
         const job = await q.createJob({ ...data, queue: q }).save()

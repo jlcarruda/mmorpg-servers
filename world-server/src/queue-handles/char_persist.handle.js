@@ -1,7 +1,6 @@
 const { Character } = require('../models')
 const ClientPool = require('../network/client-pool')
 
-
 module.exports = async (job) => {
   const clientPool = ClientPool.getInstance()
   const { data: { client_id } } = job

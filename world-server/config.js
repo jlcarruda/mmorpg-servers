@@ -1,4 +1,6 @@
-require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const maps = require('./src/game/maps')
 
@@ -25,6 +27,8 @@ module.exports = {
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    url: process.env.REDISTOGO_URL
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD,
+    url: process.env.REDIS_TLS_URL
   }
 }
