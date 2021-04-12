@@ -29,6 +29,10 @@ module.exports = {
       useFindAndModify: true
     }
   },
+  queue: {
+    removeOnSuccess: true,
+    removeOnFailure: true,
+  },
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,

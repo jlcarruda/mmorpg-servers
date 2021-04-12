@@ -1,12 +1,22 @@
 const config = require('./config')
 const database = require('./src/libs/database')
+const Queues = require('./src/libs/queues')
 
-const { server, database: dbConfigs } = config
+const { server, database: dbConfigs, queue: queueConfig } = config
 
 module.exports = (async () => {
-  await database.connect(dbConfigs)
-  // Create redis client
-  // create queues
+  try {
+    await database.connect(dbConfigs)
+
+    const queues = Queues.getInstance()
+
+    queues.createQueue('POS_UPDATE_Q', () => {}, queueConfig)
+    // queues.createQueue('CHAR_UPDATE_Q', () => {}, queueConfig)
+    queues.createQueue('CHAR_PERSIST_Q', () => {}, queueConfig)
+  } catch (err) {
+    console.error("[GAMEWORLD] Error while trying to initialize server", err)
+    throw err
+  }
   // initialize socket server
 })()
 
@@ -32,11 +42,11 @@ module.exports = (async () => {
 
 //     await databaseInitializer(database)
 //     // Create queues
-//     const config = {
-//       ...sharedRedisConfig,
-//       removeOnSuccess: true,
-//       removeOnFailure: true,
-//     }
+    // const config = {
+    //   ...sharedRedisConfig,
+    //   removeOnSuccess: true,
+    //   removeOnFailure: true,
+    // }
 //     await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
 //     // await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
 //     await WorldQueues.createQueue("CHAR_PERSIST_Q", charPersistHandle, config)

@@ -1,6 +1,10 @@
 let client;
 
-module.exports = async (newClient = false) => {
+/**
+ * Retrieves the client of a repository that is used for queues
+ * @param {boolean} newClient - Defaults to false. Tell if it will create a new client and overwrite
+ */
+const getClient = async (newClient = false) => {
   console.log(`[REDIS] Retrieving new Redis client. Client already exists? ${client !== undefined}`)
   if(!newClient && client) {
     console.log('[REDIS] Client already created')
@@ -27,4 +31,9 @@ module.exports = async (newClient = false) => {
     console.error('[REDIS] Error trying to create or connect client', err)
     throw err
   }
+}
+
+
+module.exports = {
+  getClient
 }
