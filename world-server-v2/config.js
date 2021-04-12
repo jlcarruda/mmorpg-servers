@@ -22,7 +22,12 @@ module.exports = {
     rest: process.env.REST_SERVER
   },
   database: {
-    uri: process.env.DATABASE_URI
+    uri: process.env.DATABASE_URI,
+    configs: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: true
+    }
   },
   redis: {
     host: process.env.REDIS_HOST,
