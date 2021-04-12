@@ -1,8 +1,6 @@
-const { packet, protocol: { parser } } = require('../libs/network')
+const { protocol: { parser } } = require('../libs/network')
 
-// const packet = require('../network/packet')
 const { Pool: ClientPool } = require('../libs/client')
-// const Parser = require('../network/packet-parser')
 
 module.exports = async (client, socket, datapacket) => {
   const data = parser.char_update.parse(datapacket)
