@@ -1,0 +1,16 @@
+const REQUEST_HANDSHAKE = "REQUEST_HANDSHAKE"
+const CHAR_UPDATE = "CHAR_UPDATE"
+const POS_UPDATE = "POS_UPDATE"
+const POS_UPDATE_RUN = "POS_UPDATE_RUN"
+
+const messages = {
+  REQUEST_HANDSHAKE,
+  CHAR_UPDATE,
+  POS_UPDATE,
+  POS_UPDATE_RUN
+}
+
+
+module.exports = {
+  messages
+}

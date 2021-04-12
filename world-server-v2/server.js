@@ -1,6 +1,7 @@
 const config = require('./config')
 const database = require('./src/libs/database')
 const Queues = require('./src/libs/queues')
+const socketServer = require('./src/initializers/socket')
 
 const { server, database: dbConfigs, queue: queueConfig } = config
 
@@ -17,6 +18,8 @@ module.exports = (async () => {
     console.error("[GAMEWORLD] Error while trying to initialize server", err)
     throw err
   }
+
+
   // initialize socket server
 })()
 

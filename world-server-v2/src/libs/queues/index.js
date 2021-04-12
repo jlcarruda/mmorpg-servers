@@ -1,4 +1,4 @@
-const { getClient } = require('../../repositories/queue')
+const { getClient } = require('../../repositories/redis')
 const queueFactory = require('./queue.factory')
 const jobFactory = require('./job.factory')
 
