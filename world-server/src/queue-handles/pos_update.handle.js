@@ -5,9 +5,6 @@ const packet = require('../network/packet')
 const SocketPool = require('../network/socket-pool')
 const ClientPool = require('../network/client-pool')
 
-const socketPool = SocketPool.getInstance()
-const clientPool = ClientPool.getInstance()
-
 module.exports = async (job) => {
   switch(job.data.command) {
     case "POS_UPDATE_RUN":
@@ -18,6 +15,8 @@ module.exports = async (job) => {
 }
 
 async function pos_update({ client, packet: packetReceived }, isRunning) {
+  const socketPool = SocketPool.getInstance()
+  const clientPool = ClientPool.getInstance()
   const socket = socketPool.get(client.socket)
   const { x: charX, y: charY } = client.character.position
   const { x, y } = packetReceived

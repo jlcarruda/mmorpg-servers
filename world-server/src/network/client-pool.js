@@ -1,22 +1,18 @@
-const { promisify } = require('util')
 const redis = require('redis')
 const config = require('../../config')
 const createRedisClient = require('../redis')
 
 const { redis: { host, port } } = config
 
-let _getAsync
-let _setAsync
-let _delAsync
 // TODO: Maybe, add a map for client ids, so it will cost less to loop throug it
 let _instance
+let _redisClient
 class ClientPool {
 
   static getInstance() {
     if (!_instance) {
       const errMessage = "Client Pool - instance not defined. Please create an instance before using"
       console.error(errMessage)
-      // ClientPool.create(await redisClient())
       throw new Error(errMessage)
     } else {
       return _instance;
@@ -29,11 +25,9 @@ class ClientPool {
         redisClient = await createRedisClient()
       }
       _instance = new ClientPool()
-      _getAsync = promisify(redisClient.get).bind(redisClient)
-      _setAsync = promisify(redisClient.set).bind(redisClient)
-      _delAsync = promisify(redisClient.del).bind(redisClient)
       //TODO: Maybe limit the size of the memory pool?
       _instance.pool = [] // RAM memory pool of clients for instant access
+      _redisClient = redisClient
     }
 
     return _instance
@@ -76,8 +70,9 @@ class ClientPool {
         return client;
       }
 
-      client = await _getAsync(id)
+      client = await _redisClient.get(id)
       if (client) {
+        console.log('CLient retrieved', client)
         this.poolAdd(client)
         return JSON.parse(client);
       }
@@ -92,7 +87,7 @@ class ClientPool {
   async remove(id) {
     try {
       this.poolRemove(id)
-      await _delAsync(id)
+      await _redisClient.del(id)
       return true
     } catch (err) {
       console.error('[GAMEWORLD] Error while deleting client by id', err)
@@ -102,7 +97,7 @@ class ClientPool {
 
   async update(client) {
     try {
-      const c = await _getAsync(client.id)
+      const c = await _redisClient.get(client.id)
       if (c) {
         this.poolUpdate(client)
         //TODO: Check performance of this block
@@ -110,7 +105,7 @@ class ClientPool {
         const lastUpdate = new Date(c.lastUpdatedAt)
         const diffTime = Math.abs(today - lastUpdate)
         if (Math.ceil(diffTime / (1000 * 60) >= 5)) { // 5 minutes
-          await _setAsync(client.id, JSON.stringify(client))
+          await redis.set(client.id, JSON.stringify(client))
         }
         return true
       }
@@ -124,10 +119,10 @@ class ClientPool {
   async add(client) {
     try {
       this.poolAdd(client)
-      await _setAsync(client.id, JSON.stringify(client))
+      await _redisClient.set(client.id, JSON.stringify(client))
       return true
     } catch (error) {
-      console.error('[GAMEWORLD] Error while adding client to the pool', err)
+      console.error('[GAMEWORLD] Error while adding client to the pool', error)
     }
     return false
   }

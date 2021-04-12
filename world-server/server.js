@@ -3,9 +3,7 @@ const { initialize: serverInitializer } = require('./src/initializer')
 const { initialize: databaseInitializer } = require('./src/database')
 const createRedisClient = require('./src/redis')
 const WorldQueues = require('./src/queue')
-// const { posUpdateHandle, charPersistHandle } = require('./src/queue-handles')
-// const redis = require('redis')
-const Redis = require('ioredis')
+const { posUpdateHandle, charPersistHandle } = require('./src/queue-handles')
 
 const { server, database } = config
 console.log("Configs Initialized", JSON.stringify(config))
@@ -27,9 +25,9 @@ module.exports = (async () => {
       removeOnSuccess: true,
       removeOnFailure: true,
     }
-    // await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
+    await WorldQueues.createQueue("POS_UPDATE_Q", posUpdateHandle, config)
     // await WorldQueues.createQueue("CHAR_UPDATE_Q", charUpdateHandle, config)
-    // await WorldQueues.createQueue("CHAR_PERSIST_Q", charPersistHandle, config)
+    await WorldQueues.createQueue("CHAR_PERSIST_Q", charPersistHandle, config)
 
     await serverInitializer(server, redisClient)
 
