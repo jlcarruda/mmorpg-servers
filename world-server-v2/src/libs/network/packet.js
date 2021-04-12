@@ -1,6 +1,8 @@
+const short = require('short-uuid')
 const { parser } = require('./protocol')
 const { Pool: ClientPool } = require('../client')
 const SocketPool = require('./pool')
+const interpreters = require('../../interpreters')
 
 const zeroBuffer = Buffer.from('00', 'hex')
 
@@ -23,9 +25,9 @@ const interpret = async (datapacket) => {
 
     console.log(`[PACKET] Interpret: ${command}`)
     // If command is implemented
-    // if (interpreters[command]) {
-    //   interpreters[command](client, socket, datapacket)
-    // }
+    if (interpreters[command]) {
+      interpreters[command](client, socket, datapacket)
+    }
   } catch (err) {
     console.error(`[GAMEWORLD] Error while interpreting packet`, err)
     throw err

@@ -6,7 +6,7 @@ module.exports = async (job) => {
   const { data: { client_id } } = job
   try {
     const client = await clientPool.findById(client_id)
-    if (client) {
+    if (client && client.character) {
       await Character.findByIdAndUpdate(client.character._id, client.character)
       await clientPool.remove(client.id)
     }

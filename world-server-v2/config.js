@@ -40,9 +40,9 @@ module.exports = {
     password: process.env.REDIS_PASSWORD,
     url: process.env.REDIS_TLS_URL,
     config: {
-      tls: {
-        rejectUnauthorized: false
-      },
+      // tls: {
+      //   rejectUnauthorized: false
+      // },
       lazyConnect: true
     }
   }

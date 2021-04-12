@@ -19,7 +19,7 @@ class Queues {
    */
   static getInstance() {
     if (!_instance) {
-      create()
+      Queues.create()
     }
 
     return _instance
@@ -58,7 +58,7 @@ class Queues {
     const q = this.queues[queueName] && this.queues[queueName].queue
     try {
       if (q) {
-        await jobFactory.create(q, { ...data, queue: q })
+        await jobFactory.create(q, { ...data })
       }
     } catch(err) {
       console.error('[GAMEWORLD] Could not create job: ', err)

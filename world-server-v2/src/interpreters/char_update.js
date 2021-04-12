@@ -1,4 +1,4 @@
-const { protocol: { parser } } = require('../libs/network')
+const { parser } = require('../libs/network/protocol')
 
 const { Pool: ClientPool } = require('../libs/client')
 

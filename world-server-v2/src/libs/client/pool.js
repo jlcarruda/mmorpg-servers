@@ -19,9 +19,9 @@ class ClientPool {
       const errMessage = "[CLIENT POOL] - instance not defined. Please create an instance before using"
       console.error(errMessage)
       await ClientPool.create()
-    } else {
-      return _instance;
     }
+
+    return _instance;
   }
 
   /**

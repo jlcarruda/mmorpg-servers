@@ -1,5 +1,6 @@
 const now = require('performance-now')
-const { Pool: SocketPool, protocol: { parser, messages } } = require('../libs/network')
+const { Pool: SocketPool } = require('../libs/network')
+const { parser, messages } = require('../libs/network/protocol')
 const { Pool: ClientPool  } = require('../libs/client')
 const { users } = require('../connectors/rest_connector')
 

@@ -9,9 +9,9 @@ let _server;
 const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, reject) => {
   if (!_server) {
 
-    const clientPool = await ClientPool.getInstance()
-    const socketPool = SocketPool.create()
     server = net.createServer(async (socket) => {
+      const clientPool = await ClientPool.getInstance()
+      const socketPool = SocketPool.create()
       socket.id = uuidv4()
 
       const client = ClientFactory.create(socket)

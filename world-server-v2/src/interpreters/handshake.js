@@ -1,6 +1,7 @@
 const now = require('performance-now')
 
-const { protocol: { parser, messages }, Pool: SocketPool } = require('../libs/network')
+const { Pool: SocketPool } = require('../libs/network')
+const { messages, parser } = require('../libs/network/protocol')
 const { users } = require('../connectors/rest_connector')
 
 module.exports = async (client, socket, datapacket) => {

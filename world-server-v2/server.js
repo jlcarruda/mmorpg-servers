@@ -2,25 +2,26 @@ const config = require('./config')
 const database = require('./src/libs/database')
 const Queues = require('./src/libs/queues')
 const socketServer = require('./src/initializers/socket')
+const { charPersistHandle, posUpdateHandle } = require('./src/handles')
+const { getClient } = require('./src/repositories/redis')
 
 const { server, database: dbConfigs, queue: queueConfig } = config
 
 module.exports = (async () => {
   try {
     await database.connect(dbConfigs)
+    await getClient()
 
     const queues = Queues.getInstance()
 
-    queues.createQueue('POS_UPDATE_Q', () => {}, queueConfig)
+    queues.createQueue('POS_UPDATE_Q', posUpdateHandle, queueConfig)
     // queues.createQueue('CHAR_UPDATE_Q', () => {}, queueConfig)
-    queues.createQueue('CHAR_PERSIST_Q', () => {}, queueConfig)
+    queues.createQueue('CHAR_PERSIST_Q', charPersistHandle, queueConfig)
+    await socketServer.start(server)
   } catch (err) {
     console.error("[GAMEWORLD] Error while trying to initialize server", err)
     throw err
   }
-
-
-  // initialize socket server
 })()
 
 // const config = require('./config')
