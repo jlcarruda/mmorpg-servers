@@ -7,6 +7,8 @@ const POS_UPDATE_RUN = "POS_UPDATE_RUN"
 const CHAR_SELECTED = "CHAR_SELECTED"
 const AUTHORIZED = "AUTHORIZED"
 const HANDSHAKE_FAIL = "HANDSHAKE_FAIL"
+const POS_DESYNC = "POS_DESYNC"
+const POS_OK = "POS_OK"
 
 const messages = {
   REQUEST_HANDSHAKE,
@@ -15,7 +17,9 @@ const messages = {
   POS_UPDATE_RUN,
   CHAR_SELECTED,
   AUTHORIZED,
-  HANDSHAKE_FAIL
+  HANDSHAKE_FAIL,
+  POS_DESYNC,
+  POS_OK
 }
 
 module.exports = {
