@@ -16,5 +16,6 @@ module.exports = async (client, socket, datapacket) => {
     stamina: state.attributes.stamina,
   }
 
-  ClientPool.getInstance().update(client)
+  const clientPool = await ClientPool.getInstance()
+  clientPool.update(client)
 }

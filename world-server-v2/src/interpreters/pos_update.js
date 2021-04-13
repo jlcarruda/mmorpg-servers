@@ -1,7 +1,7 @@
 const now = require('performance-now')
 
 const { Pool: SocketPool } = require('../libs/network')
-const { parser, messages } = require('../libs/network/protocol')
+const { parser } = require('../libs/network/protocol')
 const { Pool: ClientPool } = require('../libs/client')
 const Queues = require('../libs/queues')
 
@@ -14,12 +14,13 @@ module.exports = async (client, socket, datapacket, isRunning = false) => {
   }
 
   if (!client.character) {
-    ClientPool.getInstance().remove(client)
+    const clientPool = await ClientPool.getInstance()
+    await clientPool.remove(client)
     return SocketPool.getInstance().destroy(socket)
   }
 
   try {
-    await Queues.createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, client })
+    await Queues.getInstance().createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, client })
   } catch(err) {
     console.error("ERROR WHILE CREATING JOB", err)
   }
