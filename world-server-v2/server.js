@@ -14,9 +14,9 @@ module.exports = (async () => {
 
     const queues = Queues.getInstance()
 
-    queues.createQueue('POS_UPDATE_Q', posUpdateHandle, queueConfig)
+    await queues.createQueue('POS_UPDATE_Q', posUpdateHandle, queueConfig)
     // queues.createQueue('CHAR_UPDATE_Q', () => {}, queueConfig)
-    queues.createQueue('CHAR_PERSIST_Q', charPersistHandle, queueConfig)
+    await queues.createQueue('CHAR_PERSIST_Q', charPersistHandle, queueConfig)
     await socketServer.start(server)
   } catch (err) {
     console.error("[GAMEWORLD] Error while trying to initialize server", err)

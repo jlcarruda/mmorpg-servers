@@ -36,10 +36,10 @@ class Queues {
       console.log(`[GAMEWORLD] Creating queue ${name}`)
       if (!this.queues[name]) {
         const client = await getClient()
-        this.queues[name] = queueFactory.create(name, processHandle, config, client)
+        this.queues[name] = await queueFactory.create(name, processHandle, config, client.redis)
       }
 
-      return await this.queues[name].queue.ready()
+      return this.queues[name].queue
     } catch(err) {
       console.error('[QUEUE] Error while trying to reate queue', err)
       throw err
@@ -58,7 +58,10 @@ class Queues {
     const q = this.queues[queueName] && this.queues[queueName].queue
     try {
       if (q) {
-        await jobFactory.create(q, { ...data })
+        const job = await q.createJob(data).save()
+        job.on('retrying', () => console.log('[GAMEWORLD] Retrying job '))
+        job.on('succeeded', () => console.log('[GAMEWORLD] Success job '))
+        // await jobFactory.create(q, { ...data })
       }
     } catch(err) {
       console.error('[GAMEWORLD] Could not create job: ', err)
