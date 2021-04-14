@@ -121,23 +121,25 @@ class ClientPool {
    * Update the client object in the pool.
    * It will rewrite all the object in which its key (`id`) matched.
    * @param {string | JSON} client - Client object
+   * @param {boolean} forceUpdate - Defaults to false. Force update on storage and pool
    * @returns {Promise<boolean>} indicates if the operation succeeded or not
    */
-  async update(client) {
+  async update(client, forceUpdate = false) {
     try {
       if (typeof client === 'string') {
         client = Factory.deserialize(client)
       }
       const c = await _storageClient.get(client.id)
       if (c) {
-        this.poolUpdate(client)
         //TODO: Check performance of this block
         const today = new Date()
-        const lastUpdate = new Date(c.lastUpdatedAt)
+        const lastUpdate = new Date(client.lastUpdatedAt)
         const diffTime = Math.abs(today - lastUpdate)
-        if (Math.ceil(diffTime / (1000 * 60) >= 5)) { // 5 minutes
+        if (forceUpdate || Math.ceil(diffTime / (1000 * 60)) >= 5) { // 5 minutes
+          client.set('lastUpdatedAt', today.toString())
           await _storageClient.set(client.id, Factory.serialize(client))
         }
+        this.poolUpdate(client)
         return true
       }
     } catch(err) {

@@ -32,8 +32,8 @@ module.exports = async (client, socket, datapacket) => {
 
     const character = await Character.findById(char_id).lean()
 
-    client.character = character
-    await clientPool.update(client)
+    client.set('character', character)
+    await clientPool.update(client, true)
     // console.log("Character selected", character)
     socket.write(build([messages.CHAR_SELECTED, 'TRUE', now().toString()]))
   } catch (error) {

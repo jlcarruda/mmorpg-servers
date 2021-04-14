@@ -22,8 +22,9 @@ module.exports = async (client, socket, datapacket) => {
       return SocketPool.getInstance().destroy(socket)
     }
 
-    client.user = responseData.data
-    client.token = token
+    client.set('user', responseData.data)
+    client.set('token', token)
+
     await clientPool.update(client) // Await so I make sure that the client is updated with user
     socket.write(build([messages.AUTHORIZED, now().toString()]))
   } catch (error) {

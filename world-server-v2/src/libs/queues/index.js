@@ -31,12 +31,11 @@ class Queues {
    * @param {*} processHandle - Process function
    * @param {*} config - extra configuration
    */
-  async createQueue(name, processHandle, config) {
+  async createQueue(name, processHandle, { interval } = { interval: 0 }) {
     try {
       console.log(`[GAMEWORLD] Creating queue ${name}`)
       if (!this.queues[name]) {
-        const client = await getClient()
-        this.queues[name] = await queueFactory.create(name, processHandle, config, client.redis)
+        this.queues[name] = await queueFactory.create(name, processHandle, interval)
       }
 
       return this.queues[name].queue
@@ -58,9 +57,7 @@ class Queues {
     const q = this.queues[queueName] && this.queues[queueName].queue
     try {
       if (q) {
-        const job = await q.createJob(data).save()
-        job.on('retrying', () => console.log('[GAMEWORLD] Retrying job '))
-        job.on('succeeded', () => console.log('[GAMEWORLD] Success job '))
+        await q.push(data)
         // await jobFactory.create(q, { ...data })
       }
     } catch(err) {

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-
+const Client = require('./client')
 class ClientFactory {
   /**
    * Create a brand new client object
@@ -7,7 +7,7 @@ class ClientFactory {
    */
   static create(socket) {
     //TODO: verify if socket is already in socket pool. If it is, do not create another client
-    const client = {
+    const blueprint = {
       socket: socket.id,
       character: null,
       user: null,
@@ -17,7 +17,7 @@ class ClientFactory {
       id: uuidv4(),
     }
 
-    return client
+    return new Client(blueprint)
   }
 
   /**
@@ -26,7 +26,7 @@ class ClientFactory {
    * @returns {JSON} client object
    */
   static deserialize(clientSerialized) {
-    return JSON.parse(clientSerialized)
+    return new Client(JSON.parse(clientSerialized))
   }
 
   /**
@@ -35,7 +35,7 @@ class ClientFactory {
    * @returns {string} Serialized client
    */
   static serialize(client) {
-    return JSON.stringify(client)
+    return client.serialize()
   }
 }
 

@@ -3,7 +3,7 @@ const { Pool: ClientPool } = require('../libs/client')
 
 module.exports = async (job) => {
   const clientPool = await ClientPool.getInstance()
-  const { data: { client_id } } = job
+  const { client_id } = job
   try {
     const client = await clientPool.findById(client_id)
     if (client && client.character) {

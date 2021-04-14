@@ -6,18 +6,23 @@ const { Pool: SocketPool, packet, protocol: { messages } } = require('../libs/ne
 // const { Character } = require('../models')
 
 module.exports = async (job) => {
-  switch(job.data.command) {
+  switch(job.command) {
     case "POS_UPDATE_RUN":
-      return await pos_update(job.data, true)
+      return await pos_update(job, true)
     case "POS_UPDATE":
-      return await pos_update(job.data, false)
+      return await pos_update(job, false)
   }
 }
 
-async function pos_update({ client, packet: packetReceived }, isRunning) {
+async function pos_update({ clientId, packet: packetReceived }, isRunning) {
   const socketPool = SocketPool.getInstance()
   const clientPool = await ClientPool.getInstance()
+  const client = await clientPool.findById(clientId)
   const socket = socketPool.get(client.socket)
+  if (!socket) {
+    console.error('No socket associated with this client')
+    return
+  }
   const { x: charX, y: charY } = client.character.position
   const { x, y } = packetReceived
   const notValid = validateMovement(client.character.position, x, y, isRunning)
@@ -26,9 +31,8 @@ async function pos_update({ client, packet: packetReceived }, isRunning) {
   } else {
     try  {
 
-      client.character.position.x = x
-      client.character.position.y = y
-      await clientPool.update(client)
+      client.set('character', { ...client.character, position: { ...client.character.position, x, y } })
+      await clientPool.update(client, true)
       socket.write(packet.build([messages.POS_OK, x, y, now().toString()]))
     } catch(err) {
       console.log("ERROR WHILE SAVING POSITION", err)

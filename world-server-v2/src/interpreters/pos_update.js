@@ -20,7 +20,7 @@ module.exports = async (client, socket, datapacket, isRunning = false) => {
   }
 
   try {
-    await Queues.getInstance().createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, client })
+    await Queues.getInstance().createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, clientId: client.id })
   } catch(err) {
     console.error("ERROR WHILE CREATING JOB", err)
   }

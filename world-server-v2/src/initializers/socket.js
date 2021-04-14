@@ -15,17 +15,13 @@ const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, r
       socket.id = uuidv4()
 
       const client = ClientFactory.create(socket)
+      const client_id = client.id
 
-      socket.on("error", async (err) => {
-        console.log("[SOCKET] Error on socket connection", err)
-        await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: client.id}) //NOTE: client_id
-      })
+      socket.on("error", client.onError.bind(client))
 
-      socket.on("end", async () => {
-        await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: client.id}) //NOTE: client_id
-      })
+      socket.on("end", client.onEnd.bind(client))
 
-      socket.on("data", (data) => packet.parse(data))
+      socket.on("data", client.onData.bind(client))
 
       clientPool.add(client)
       socketPool.add(socket)
