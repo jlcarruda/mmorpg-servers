@@ -3,11 +3,11 @@ version: '3'
 services:
   world:
     container_name: 'ignite-online-world'
-    env_file: ./world-server-v2/.env.dev
+    env_file: ./world-server/.env.dev
     ports:
       - "3000:3000"
     build:
-      context: ./world-server-v2
+      context: ./world-server
       dockerfile: ./Dockerfile
   rest:
     container_name: 'ignite-online-rest'

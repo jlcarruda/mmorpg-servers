@@ -1,24 +1,26 @@
 const now = require('performance-now')
-const Parser = require('../network/packet-parser')
-const SocketPool = require('../network/socket-pool')
-const ClientPool = require('../network/client-pool')
-const WorldQueues = require('../queue')
+
+const { Pool: SocketPool } = require('../libs/network')
+const { parser } = require('../libs/network/protocol')
+const { Pool: ClientPool } = require('../libs/client')
+const Queues = require('../libs/queues')
 
 module.exports = async (client, socket, datapacket, isRunning = false) => {
   let data;
   if (!isRunning) {
-    data = Parser.pos_update.parse(datapacket)
+    data = parser.pos_update.parse(datapacket)
   } else {
-    data = Parser.pos_update_run.parse(datapacket)
+    data = parser.pos_update_run.parse(datapacket)
   }
 
   if (!client.character) {
-    ClientPool.getInstance().remove(client)
+    const clientPool = await ClientPool.getInstance()
+    await clientPool.remove(client)
     return SocketPool.getInstance().destroy(socket)
   }
 
   try {
-    await WorldQueues.createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, client })
+    await Queues.getInstance().createJob('POS_UPDATE_Q', { command: isRunning ? "POS_UPDATE_RUN" : "POS_UPDATE", packet: data, clientId: client.id })
   } catch(err) {
     console.error("ERROR WHILE CREATING JOB", err)
   }
