@@ -1,12 +1,12 @@
 const { Character } = require('../models')
-const ClientPool = require('../network/client-pool')
+const { Pool: ClientPool } = require('../libs/client')
 
 module.exports = async (job) => {
-  const clientPool = ClientPool.getInstance()
-  const { data: { client_id } } = job
+  const clientPool = await ClientPool.getInstance()
+  const { client_id } = job
   try {
     const client = await clientPool.findById(client_id)
-    if (client) {
+    if (client && client.character) {
       await Character.findByIdAndUpdate(client.character._id, client.character)
       await clientPool.remove(client.id)
     }

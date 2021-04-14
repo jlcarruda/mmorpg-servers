@@ -1,13 +1,9 @@
 const mongoose = require('mongoose')
 
-const initialize = ({ uri }) => {
+const connect = ({ uri, configs }) => {
   console.info("[GAMEWORLD] Initializing DB connection ...")
   return new Promise((resolve, reject) => {
-    mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: true
-    }).then(() => {
+    mongoose.connect(uri, configs).then(() => {
       console.info("[GAMEWORLD] DB Connected!")
       resolve()
     }).catch(error => {
@@ -18,5 +14,5 @@ const initialize = ({ uri }) => {
 }
 
 module.exports = {
-  initialize
+  connect
 }

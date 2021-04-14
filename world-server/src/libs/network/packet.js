@@ -1,31 +1,26 @@
-const Parser = require('./packet-parser')
-const interpreters = require('../interpreters')
-const ClientPool = require('./client-pool')
-const SocketPool = require('./socket-pool')
 const short = require('short-uuid')
-
-const socketPool = SocketPool.create()
-
-/**
- *  Socket packets on GMS is handled in this way: A long buffer with all packets (chunks) glued
- *
- *   THe first byte of the BUFFER is its total size, so we know how much bytes to read
- *
- *   The first byte of the packet is its size, so we know how many bytes to read
- *   The last byte is a zero byte, to indicate the end of a packet.
- *
- */
+const { parser } = require('./protocol')
+const { Pool: ClientPool } = require('../client')
+const SocketPool = require('./pool')
+const interpreters = require('../../interpreters')
 
 const zeroBuffer = Buffer.from('00', 'hex')
 
 const interpret = async (datapacket) => {
   try {
     const clientPool = await ClientPool.create()
-    let { command, client_id } = Parser.header.parse(datapacket)
+    const socketPool = await SocketPool.getInstance()
+    let { command, client_id } = parser.header.parse(datapacket)
     const client = await clientPool.findById(short().toUUID(client_id))
-    const socket = socketPool.get(client.socket)
     if (!client) {
       console.error('[PACKET] Client could not be located. Disconnection packet sent')
+    }
+
+    const socket = socketPool.get(client.socket)
+
+    if (!socket) {
+      console.error('[PACKET] Client with no socket associated. Terminating client')
+      return
     }
 
     console.log(`[PACKET] Interpret: ${command}`)

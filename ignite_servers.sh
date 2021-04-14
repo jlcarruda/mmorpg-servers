@@ -1,1 +1,4 @@
-(cd ./world-server && ./start.sh) & (cd ./auth-server && ./start.sh) & (cd ./rest-server && ./start.sh) && fg
+docker-compose down
+docker-compose build
+docker image prune -f
+docker-compose up

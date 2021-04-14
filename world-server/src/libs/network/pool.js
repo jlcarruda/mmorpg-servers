@@ -1,17 +1,17 @@
+let _instance;
 class SocketPool {
-  static instance;
 
   static create() {
-    if (!SocketPool.instance) {
-      SocketPool.instance = new SocketPool()
-      SocketPool.instance.pool = []
+    if (!_instance) {
+      _instance = new SocketPool()
+      _instance.pool = []
     }
 
-    return SocketPool.instance
+    return _instance
   }
 
   static getInstance() {
-    return SocketPool.instance || SocketPool.create()
+    return _instance || SocketPool.create()
   }
 
   get(id) {
@@ -46,7 +46,10 @@ class SocketPool {
 }
 
 function destroySocket(socket, retries = 0) {
-  socket.destroy()
+  // First check if socket was destroyed
+  if (!socket.destroyed) socket.destroy()
+
+  // After attempting to destroy it, check again for retry
   if (!socket.destroyed) {
     if (retries === 5) {
       console.error('[SOCKET] Unable to destroy socket connection. Crashing ...')
