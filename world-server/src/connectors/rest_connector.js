@@ -68,6 +68,31 @@ module.exports = {
           throw err;
         }
       }
+    },
+    setClientToUser: async (userId, client_id, token, { rest: baseUrl } = config.connectors) => {
+      try {
+        const response = await getRestClient().post(`${baseUrl}/users/${userId}/client`, {
+          data: {
+            client_id,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+
+        return response
+      } catch(err) {
+        if (err.isAxiosError) {
+          console.error(`[GAMEWORLD] Bad gateway error. Rest server responded with ${err.response && err.response.status || 'no' } status`, err)
+          return {
+            status: 502,
+            message: "Bad Gateway"
+          }
+        } else {
+          console.error("[GAMEWORLD] Failed to reach Rest server", err)
+          throw err;
+        }
+      }
     }
   }
 }
