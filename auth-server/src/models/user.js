@@ -7,6 +7,9 @@ const schema = new Schema({
     unique: true,
     required: true
   },
+  client: {
+    type: String
+  },
   email: {
     type: String,
   },

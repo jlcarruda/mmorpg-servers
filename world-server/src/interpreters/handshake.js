@@ -12,6 +12,7 @@ module.exports = async (client, socket, datapacket) => {
   const { token, user_id } = data
 
   try {
+    // Retrieve user
     const response = await users.getUser(user_id, token)
     const { status, data: responseData } = response
     const clientPool = await ClientPool.getInstance()
@@ -22,6 +23,8 @@ module.exports = async (client, socket, datapacket) => {
       return SocketPool.getInstance().destroy(socket)
     }
 
+
+    // Attach client to user
     client.set('user', responseData.data)
     client.set('token', token)
 
