@@ -15,6 +15,27 @@ module.exports = (app) => {
     }
   })
 
+  app.post('/users/:userId/logout', isAuthenticated, async (req, res, next) => {
+    console.log('[REST] Loggin out user (Unattach client)')
+    const { auth: user } = res.locals
+    const { client_id } = req.body
+
+    try {
+      const checkUser = await User.findById(userId)
+      if (chekcUser && checkUser.client === client_id) {
+        checkUser.client = ""
+
+        await checkUser.save()
+      }
+
+      res.status(200)
+
+      next()
+    } catch (err) {
+
+    }
+  })
+
   app.post('/users/:userId/client', isAuthenticated, async (req, res, next) => {
     console.log('[REST] Attaching client id to user')
     const { auth: user } = res.locals
