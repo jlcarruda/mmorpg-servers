@@ -66,7 +66,7 @@ class Client {
     const pool = await ClientPool.getInstance()
     await pool.remove(this.id)
 
-    await users.logout(this.user, this.id, this.token)
+    await users.logout(this.user.id, this.id, this.token)
     await Character.findByIdAndUpdate(this.character._id, this.character)
   }
 }

@@ -21,8 +21,8 @@ module.exports = (app) => {
     const { client_id } = req.body
 
     try {
-      const checkUser = await User.findById(userId)
-      if (chekcUser && checkUser.client === client_id) {
+      const checkUser = await User.findById(user.id)
+      if (checkUser.client === client_id) {
         checkUser.client = ""
 
         await checkUser.save()
@@ -30,10 +30,11 @@ module.exports = (app) => {
 
       res.status(200)
 
-      next()
     } catch (err) {
-
+      console.error('Error while logging out client', err)
+      res.status(500)
     }
+    next()
   })
 
   app.post('/users/:userId/client', isAuthenticated, async (req, res, next) => {
