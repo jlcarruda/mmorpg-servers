@@ -10,7 +10,8 @@ module.exports = {
   },
   server: {
     host: process.env.HOST,
-    port: process.env.PORT
+    port: process.env.PORT,
+    session_timelimit: 1000 * 60 * parseInt(process.env.SESSION_TTL_MIN) // 10 minutes
   },
   game: {
     starting_zone: process.env.STARTING_ZONE_ROOM_NAME,

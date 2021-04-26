@@ -1,9 +1,13 @@
+const config = require('../../../config')
 const { getClient } = require('../../repositories/redis')
 const Factory = require('./factory')
 
 let _storageClient
 let _instance
 let _maxClients = 50
+let _clearClientInterval
+
+const idle_timelimit = config.server.session_timelimit
 /**
  * Singleton class that will handle the connected clients pool
  */
@@ -43,7 +47,42 @@ class ClientPool {
       _storageClient = storageClient
     }
 
+    if (!_clearClientInterval) {
+      const { User } = require('../../models')
+
+      _clearClientInterval = setInterval(ClientPool._clearDisconnectedClients(_instance, User, idle_timelimit), idle_timelimit)
+    }
+
     return _instance
+  }
+
+  static _clearDisconnectedClients(poolInstance, userModel, timelimit) {
+    return async () => {
+      console.log('[CLIENT CLEAR] - Start clearing client pool from idle clients...')
+      try {
+        const now = new Date().getUTCMilliseconds()
+
+        // Get only clients who does not responded in the timelimit
+        const idleClients = poolInstance.getPool()
+          .filter(c => {
+            const cLastUpdated = new Date(c.lastUpdatedAt).getUTCMilliseconds()
+            const diff = now - cLastUpdated
+            return diff > timelimit
+          })
+          .map(c => c.id)
+        if (idleClients.length > 0) {
+          // Retrieve users who has those clients attached and unattach them
+          const { nModified: usersUpdated } = await userModel.updateMany({ client: { $in: idleClients } }, { client: '' })
+          console.log(`[CLIENT CLEAR] - ${usersUpdated} users unattached from ${idleClients.length} idle clients found ...`)
+          // TODO: Send logout message to clients
+          // TODO: Remove the clients from the pool
+        } else {
+          console.log('[CLIENT CLEAR] - No idle clients found')
+        }
+      } catch(err) {
+        console.error('[CLIENT CLEAR] - An error ocurred when trying to clear the pool of clients')
+      }
+    }
   }
 
   poolGet(id) {
@@ -73,6 +112,10 @@ class ClientPool {
     if (index >= 0) {
       this.pool[index] = client
     }
+  }
+
+  getPool() {
+    return this.pool;
   }
 
   /**
