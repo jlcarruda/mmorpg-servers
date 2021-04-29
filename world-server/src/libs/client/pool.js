@@ -8,6 +8,49 @@ let _maxClients = 50
 let _clearClientInterval
 
 const idle_timelimit = config.server.session_timelimit
+
+function _clearDisconnectedClients(userModel, timelimit, ClientFactory, ClientPool, SocketPool, packet, { FORCE_DISCONNECT }) {
+  return async () => {
+    const clientPool = await ClientPool.getInstance()
+    console.log('[CLIENT CLEAR] - Start clearing client pool from idle clients...')
+    try {
+      const now = new Date().getUTCMilliseconds()
+
+      // Get only clients who doesnt responded in the timelimit
+      const idleClients = clientPool.getPool()
+        .filter(c => {
+          const cLastUpdated = new Date(c.lastUpdatedAt).getUTCMilliseconds()
+          const diff = now - cLastUpdated
+          return diff > timelimit
+        })
+        .map(c => ClientFactory.deserialize(c))
+
+      if (idleClients.length > 0) {
+        const idleClientsIds = idleClients.map(c => c.id)
+        idleClients.forEach(async c => {
+          const { id, socket } = c
+          const s = SocketPool.getInstance().get(socket)
+          if (s) {
+            s.write(packet.build([FORCE_DISCONNECT, id]))
+            await clientPool.remove(id)
+          }
+        })
+        // Retrieve users who has those clients attached and unattach them
+        const { nModified: usersUpdated } = await userModel.updateMany({ client: { $in: idleClientsIds } }, { client: '' })
+        console.log(`[CLIENT CLEAR] - ${usersUpdated} users unattached from ${idleClients.length} idle clients found`)
+      } else {
+        console.log('[CLIENT CLEAR] - No idle clients found. Unattach all users')
+        const { nModified: usersUpdated } = await userModel.updateMany({ client: { $ne: "" } }, { client: '' })
+        if (usersUpdated > 0) {
+          console.log(`[CLIENT CLEAR] - Unattached all ${usersUpdated} users with clients attached to them`)
+        }
+      }
+    } catch(err) {
+      console.error('[CLIENT CLEAR] - An error ocurred when trying to clear the pool of clients', err)
+    }
+  }
+}
+
 /**
  * Singleton class that will handle the connected clients pool
  */
@@ -48,41 +91,20 @@ class ClientPool {
     }
 
     if (!_clearClientInterval) {
+      console.log('Setting Client clear interval ...')
       const { User } = require('../../models')
+      // const SocketPool = require('../network/pool')
+      const { packet, protocol: { messages }, Pool: SocketPool } = require('../network')
 
-      _clearClientInterval = setInterval(ClientPool._clearDisconnectedClients(_instance, User, idle_timelimit), idle_timelimit)
+      _clearClientInterval = setInterval(_clearDisconnectedClients(User, idle_timelimit, Factory, ClientPool, SocketPool, packet, messages), idle_timelimit)
+      if(_clearClientInterval) {
+        console.log('Clear client interval setted!')
+      } else {
+        console.log('Clear client was not being setted due to some error!')
+      }
     }
 
     return _instance
-  }
-
-  static _clearDisconnectedClients(poolInstance, userModel, timelimit) {
-    return async () => {
-      console.log('[CLIENT CLEAR] - Start clearing client pool from idle clients...')
-      try {
-        const now = new Date().getUTCMilliseconds()
-
-        // Get only clients who does not responded in the timelimit
-        const idleClients = poolInstance.getPool()
-          .filter(c => {
-            const cLastUpdated = new Date(c.lastUpdatedAt).getUTCMilliseconds()
-            const diff = now - cLastUpdated
-            return diff > timelimit
-          })
-          .map(c => c.id)
-        if (idleClients.length > 0) {
-          // Retrieve users who has those clients attached and unattach them
-          const { nModified: usersUpdated } = await userModel.updateMany({ client: { $in: idleClients } }, { client: '' })
-          console.log(`[CLIENT CLEAR] - ${usersUpdated} users unattached from ${idleClients.length} idle clients found ...`)
-          // TODO: Send logout message to clients
-          // TODO: Remove the clients from the pool
-        } else {
-          console.log('[CLIENT CLEAR] - No idle clients found')
-        }
-      } catch(err) {
-        console.error('[CLIENT CLEAR] - An error ocurred when trying to clear the pool of clients')
-      }
-    }
   }
 
   poolGet(id) {

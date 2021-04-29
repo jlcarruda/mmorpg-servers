@@ -5,9 +5,8 @@ const { protocol: { messages }, packet: Packet, Pool: SocketPool } = require('..
 const { Pool: ClientPool, Factory: ClientFactory } = require('../libs/client')
 
 let _server;
-const start = ({ port, host, session_timelimit }, packet = Packet) => new Promise(async (resolve, reject) => {
+const start = ({ port, host }, packet = Packet) => new Promise(async (resolve, reject) => {
   if (!_server) {
-    setInterval(cleanZombieClients, session_timelimit)
     server = net.createServer(async (socket) => {
       const clientPool = await ClientPool.getInstance()
       const socketPool = SocketPool.create()

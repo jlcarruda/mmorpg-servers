@@ -1,5 +1,4 @@
 const { Schema, models, model } = require('mongoose')
-const bcrypt = require('bcrypt')
 
 const schema = new Schema({
   username: {
@@ -27,14 +26,7 @@ const schema = new Schema({
 })
 
 schema.pre('save', async function(next) {
-  if (this.isModified) {
-    if (this.isModified('password')) {
-      this.password = await bcrypt.hash(this.password, 10)
-    }
-
-    this.updated_at = new Date()
-  }
-
+  this.updated_at = new Date()
   next();
 })
 
