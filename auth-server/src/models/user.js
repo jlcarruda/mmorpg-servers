@@ -7,6 +7,9 @@ const schema = new Schema({
     unique: true,
     required: true
   },
+  client: {
+    type: String
+  },
   email: {
     type: String,
   },
@@ -61,7 +64,7 @@ schema.statics.checkUsernameAvailability = async function(username) {
 
 schema.statics.authenticate = async function(username, password) {
   try {
-    const user = await this.findOne({ username }).lean()
+    const user = await this.findOne({ username })
     if (!user) {
       return
     }
@@ -71,6 +74,9 @@ schema.statics.authenticate = async function(username, password) {
     if (!passwordMatch) {
       return
     }
+
+    user.last_login_at = new Date()
+    await user.save()
 
     return user;
   } catch(err) {

@@ -1,6 +1,3 @@
-const Queues = require('../queues')
-
-
 class Client {
   constructor({
     socket,
@@ -31,8 +28,10 @@ class Client {
   }
 
   set(key, value) {
-    this[key] = value
-    this._state[key] = value
+    if (this[key] !== undefined) {
+      this[key] = this._state[key] = value
+      this.lastUpdatedAt = this._state.lastUpdatedAt = new Date()
+    }
   }
 
   serialize() {
@@ -42,12 +41,10 @@ class Client {
   async onError(err) {
     console.log("[SOCKET] Error on socket connection", err)
     await this._persist()
-    // await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: this.id}) //NOTE: client_id
   }
 
   async onEnd() {
     await this._persist()
-    // await Queues.getInstance().createJob('CHAR_PERSIST_Q', {client_id: this.id}) //NOTE: client_id
   }
 
   onData(data) {
@@ -56,10 +53,17 @@ class Client {
   }
 
   async _persist() {
+    if (!this.character) {
+      console.log('[GAMEWORLD] No character selected. Skipping persist step.')
+      return
+    }
     const { Character } = require('../../models')
     const ClientPool = require('./pool')
+    const { users } = require('../../connectors/rest_connector')
     const pool = await ClientPool.getInstance()
     await pool.remove(this.id)
+
+    await users.logout(this.user.id, this.id, this.token)
     await Character.findByIdAndUpdate(this.character._id, this.character)
   }
 }

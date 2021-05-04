@@ -9,6 +9,7 @@ const AUTHORIZED = "AUTHORIZED"
 const HANDSHAKE_FAIL = "HANDSHAKE_FAIL"
 const POS_DESYNC = "POS_DESYNC"
 const POS_OK = "POS_OK"
+const FORCE_DISCONNECT = "FORCE_DISCONNECT"
 
 const messages = {
   REQUEST_HANDSHAKE,
@@ -19,7 +20,8 @@ const messages = {
   AUTHORIZED,
   HANDSHAKE_FAIL,
   POS_DESYNC,
-  POS_OK
+  POS_OK,
+  FORCE_DISCONNECT,
 }
 
 module.exports = {

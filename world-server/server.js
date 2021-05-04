@@ -4,11 +4,13 @@ const Queues = require('./src/libs/queues')
 const socketServer = require('./src/initializers/socket')
 const { charPersistHandle, posUpdateHandle } = require('./src/handles')
 const { getClient } = require('./src/repositories/redis')
+const { Pool: ClientPool } = require('./src/libs/client')
 
 const { server, database: dbConfigs, queue: queueConfig } = config
 
 module.exports = (async () => {
   try {
+    await ClientPool.create()
     await database.connect(dbConfigs)
     await getClient()
 
