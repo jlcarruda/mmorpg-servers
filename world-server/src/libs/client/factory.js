@@ -15,6 +15,7 @@ class ClientFactory {
       lastCharStateUpdate: null,
       lastUpdatedAt: Date.now().toString(),
       id: uuidv4(),
+      token: null,
     }
 
     return new Client(blueprint)

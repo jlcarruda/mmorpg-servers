@@ -17,14 +17,16 @@ module.exports = async (req, res, next) => {
         })
       }
 
-      const { id, username } = verify(token)
+      const decoded = verify(token)
 
       // If a user is trying to access data from another user
-      if (req.params.userId && id !== req.params.userId) {
+      if (!decoded || (req.params.userId && decoded.id !== req.params.userId)) {
         return res.status(403).json({
           message: "Forbidden"
         })
       }
+
+      const { id, username } = decoded
 
       const user = await User.findById(id).select('-password').populate('characters').lean()
 
