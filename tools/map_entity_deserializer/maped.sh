@@ -4,7 +4,7 @@ VAR1="$1"
 
 if [ -z "$VAR1" ]
 then
-  VAR1=./examples/starting_town.yy
+  VAR1=./examples/rm_starting_town.yy
 fi
 
 FILENAME=$(node ./convert_map.js -rf "$VAR1")

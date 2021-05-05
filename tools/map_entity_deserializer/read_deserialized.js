@@ -10,7 +10,9 @@ setTimeout(() => {
   const _aux = filePath.split('_v')
   const versionType = _aux[_aux.length - 1]
 
-  const { layers } = deserialized
+  const { layers, name } = deserialized
+
+  console.log('ROOM name', name)
 
   // Get the collision blocks
   const { instances } = layers.filter(l => l.name === 'blocks')[0]
