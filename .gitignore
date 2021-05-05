@@ -1,3 +1,6 @@
 node_modules
 .env*
 *-lock.json
+tools/**/output/*
+tools/**/converted/*
+dist
