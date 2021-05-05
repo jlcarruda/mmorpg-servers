@@ -3,7 +3,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const maps = require('./src/game/maps')
-const entities = require('./src/game/entities')
 
 module.exports = {
   encryption: {
@@ -17,7 +16,6 @@ module.exports = {
   game: {
     starting_zone: process.env.STARTING_ZONE_ROOM_NAME,
     maps,
-    entities,
     movement_max_desync: process.env.MOVEMENT_DESYNC_PACKET_THRESHOLD,
     tile_size: process.env.MOVEMENT_TILE_SIZE,
   },
