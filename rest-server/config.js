@@ -1,6 +1,6 @@
 require('dotenv').config()
 const args = require('minimist')(process.argv.slice(2))
-const package = require('./package.json')
+const entities = require('./src/game/entities')
 
 const env = args.env || "local"
 
@@ -8,8 +8,10 @@ const config = {
   encryption: {
     jwt: {
       secret: process.env.JWT_SECRET,
-      // expiresIn: process.env.JWT_EXPIRATION
     }
+  },
+  game: {
+    entities,
   },
   server: {
     host: process.env.HOST,

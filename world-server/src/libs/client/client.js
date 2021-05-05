@@ -7,6 +7,7 @@ class Client {
     lastCharStateUpdate,
     lastUpdatedAt,
     id,
+    token
   }) {
     this.socket = socket
     this.character = character
@@ -15,6 +16,7 @@ class Client {
     this.lastCharStateUpdate = lastCharStateUpdate
     this.lastUpdatedAt = lastUpdatedAt
     this.id = id
+    this.token = token;
 
     this._state = {
       socket,
@@ -24,6 +26,7 @@ class Client {
       lastCharStateUpdate,
       lastUpdatedAt,
       id,
+      token
     }
   }
 
